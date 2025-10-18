@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Root Health Integrated Assessment Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 20px 30px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1em;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .patient-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .system-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .system-name {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .score-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .score-input input {
+            width: 80px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-header {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0 15px 0;
+            font-weight: 600;
+            color: #495057;
+            border-left: 4px solid #667eea;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .total-burden {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .zyto-input {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+        }
+
+        .qra-input {
+            background: #f3e5f5;
+            border-left-color: #9c27b0;
+        }
+
+        .physical-input {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+
+        .vital-signs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Root Health Integrated Assessment</h1>
+            <p>Comprehensive Functional Medicine Evaluation System</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('patient')">Patient Info</button>
+            <button class="tab" onclick="showTab('fmlogics')">FM Logics</button>
+            <button class="tab" onclick="showTab('zyto')">ZYTO Scan</button>
+            <button class="tab" onclick="showTab('qra')">QRA</button>
+            <button class="tab" onclick="showTab('physical')">Physical Exam</button>
+            <button class="tab" onclick="showTab('report')">Report</button>
+        </div>
+
+        <div class="content">
+            <!-- Patient Info Tab -->
+            <div id="patient" class="tab-content active">
+                <h2>Patient Information</h2>
+                <div class="patient-info">
+                    <div class="input-group">
+                        <label>Patient Name</label>
+                        <input type="text" id="patientName" placeholder="Enter name">
+                    </div>
+                    <div class="input-group">
+                        <label>Date of Birth</label>
+                        <input type="date" id="patientDOB">
+                    </div>
+                    <div class="input-group">
+                        <label>Assessment Date</label>
+                        <input type="date" id="assessmentDate">
+                    </div>
+                    <div class="input-group">
+                        <label>Gender</label>
+                        <select id="patientGender">
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Chief Complaint</label>
+                    <textarea id="chiefComplaint" rows="3"></textarea>
+                </div>
+            </div>
+
+            <!-- FM Logics Tab -->
+            <div id="fmlogics" class="tab-content">
+                <h2>FM Logics Questionnaire</h2>
+                <div class="total-burden">
+                    <h3>Total Symptom Burden Score</h3>
+                    <input type="number" id="totalBurden" placeholder="0" style="width: 150px; padding: 10px; font-size: 1.5em; text-align: center; margin-top: 10px;">
+                    <p id="burdenLevel" style="margin-top: 10px;"></p>
+                </div>
+                <div id="fmLogicsSystems"></div>
+            </div>
+
+            <!-- ZYTO Tab -->
+            <div id="zyto" class="tab-content">
+                <h2>ZYTO Bioenergetic Scan</h2>
+                <div class="system-card zyto-input">
+                    <div class="input-group">
+                        <label>Total Biomarkers</label>
+                        <input type="number" id="zytoTotal" placeholder="e.g., 198">
+                    </div>
+                    <div class="input-group">
+                        <label>Range Value</label>
+                        <input type="number" id="zytoRange" placeholder="e.g., 8.78" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>In Range</label>
+                        <input type="number" id="zytoInRange" placeholder="e.g., 89">
+                    </div>
+                    <div class="input-group">
+                        <label>Out of Range</label>
+                        <input type="number" id="zytoOutRange" placeholder="e.g., 109">
+                    </div>
+                </div>
+
+                <div class="section-header">4 Core Body Systems</div>
+                <div id="zytoCoreSystem"></div>
+
+                <div class="section-header">6 Lifestyle Areas</div>
+                <div id="zytoLifestyle"></div>
+            </div>
+
+            <!-- QRA Tab -->
+            <div id="qra" class="tab-content">
+                <h2>QRA - Quantum Reflex Analysis</h2>
+                <div class="section-header">Organ Points</div>
+                <div id="qraPoints"></div>
+                
+                <div class="section-header">Energetic Signatures</div>
+                <div id="qraSignatures"></div>
+            </div>
+
+            <!-- Physical Exam Tab -->
+            <div id="physical" class="tab-content">
+                <h2>Physical Examination</h2>
+                
+                <div class="section-header">Vital Signs</div>
+                <div class="system-card physical-input">
+                    <div class="vital-signs">
+                        <div class="input-group">
+                            <label>Temp (°F)</label>
+                            <input type="number" id="temperature" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>BP Sitting</label>
+                            <input type="text" id="bpSitting" placeholder="120/80">
+                        </div>
+                        <div class="input-group">
+                            <label>BP Standing</label>
+                            <input type="text" id="bpStanding" placeholder="130/85">
+                        </div>
+                        <div class="input-group">
+                            <label>Heart Rate</label>
+                            <input type="number" id="heartRate">
+                        </div>
+                        <div class="input-group">
+                            <label>Resp Rate</label>
+                            <input type="number" id="respRate">
+                        </div>
+                        <div class="input-group">
+                            <label>Weight (lbs)</label>
+                            <input type="number" id="weight">
+                        </div>
+                    </div>
+                    <div class="checkbox-group" style="margin-top: 15px;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ragland">
+                            <label>Ragland's Test Positive</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="darkCircles">
+                            <label>Dark circles under eyes</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="physicalFindings"></div>
+            </div>
+
+            <!-- Report Tab -->
+            <div id="report" class="tab-content">
+                <h2>Assessment Summary</h2>
+                <div id="reportContent">
+                    <p style="text-align: center; padding: 40px; color: #6c757d;">
+                        Complete all assessment tabs, then click "Generate Report" below.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="generateReport()">📊 Generate Report</button>
+            <button class="btn btn-secondary" onclick="exportData()">💾 Export Data</button>
+            <button class="btn btn-secondary" onclick="clearAll()">🔄 Clear All</button>
+        </div>
+    </div>
+
+    <script>
+        const systems = [
+            "Dietary Factors", "Nutritional Deficiency", "Anemia", "Food Allergies",
+            "Liver/Gallbladder Dysfunction", "Digestive Enzyme Insufficiency",
+            "Small Intestine Dysfunction", "Large Intestine Dysfunction",
+            "Kidney Dysfunction", "Thyroid Dysfunction", "Adrenal Dysfunction",
+            "Blood Sugar Dysregulation", "Reproductive Hormone Dysfunction",
+            "Immune System Dysfunction", "Inflammation", "Infection",
+            "Cardiovascular Disease", "Environmental Toxin Exposure",
+            "Psychological Disorder", "Mycotoxin"
+        ];
+
+        const zytoCoreSystem = [
+            "Detoxification System", "Gastrointestinal System",
+            "Hormonal/Endocrine System", "Immune System"
+        ];
+
+        const zytoLifestyle = [
+            "Diet & Nutrition", "Hydration", "Inflammation",
+            "Mental/Emotional Stress", "Sleep", "Toxic Stress"
+        ];
+
+        const qraPoints = [
+            "Kidney", "Brain", "Hypothalamus", "Pituitary Gland", "Occipital Lobe",
+            "Cell Energy", "Stomach", "Lymphatics", "Parathyroid", "Spine",
+            "Spleen", "Pancreas", "Liver", "Gallbladder", "Thyroid",
+            "Ovaries/Testes", "Uterus/Prostate", "Adrenal", "Thymus",
+            "Small Intestines", "Large Intestines", "Heart", "Lungs", "Bladder",
+            "Eye", "Parotid Gland", "Brain 2", "Brain 3",
+            "Frontal Sinus", "Maxillary Sinus", "Ethmoid Sinus",
+            "Deep Sleep", "Circulation"
+        ];
+
+        const qraSignatures = [
+            "Cytokines", "Homocysteine", "Inflammatory markers", "Ammonia",
+            "Heavy Metals", "Bacteria", "Fungus", "Parasite", "Virus",
+            "Lyme", "Mycotoxin (Mold)", "Environmental toxins", "Food"
+        ];
+
+        const physicalExam = {
+            "HEENT": ["Scleral icterus", "Conjunctival pallor", "Geographic tongue", "Angular cheilitis"],
+            "Neck": ["Thyroid enlargement", "Lymphadenopathy"],
+            "Cardiovascular": ["Heart murmur", "Poor circulation", "Weak pulses"],
+            "Respiratory": ["Wheezing", "Crackles"],
+            "Abdominal": ["RUQ tenderness", "Bloating", "Organomegaly"],
+            "MSK": ["Joint swelling", "Joint pain", "Reduced ROM"],
+            "Skin/Nails": ["Easy bruising", "Dry skin", "White spots on nails", "Brittle nails"],
+            "Neuro": ["Brain fog", "Peripheral neuropathy", "Balance issues"],
+            "Hair": ["Hair loss", "Brittle hair", "Eyebrow thinning"]
+        };
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function init() {
+            // FM Logics
+            const fmContainer = document.getElementById('fmLogicsSystems');
+            systems.forEach((sys, i) => {
+                fmContainer.innerHTML += `
+                    <div class="system-card">
+                        <div class="system-header">
+                            <div class="system-name">${sys}</div>
+                            <div class="score-input">
+                                <input type="number" id="fm${i}" min="0" max="100" placeholder="0">
+                                <span>%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // ZYTO Core
+            const zytoCore = document.getElementById('zytoCoreSystem');
+            zytoCoreSystem.forEach((sys, i) => {
+                zytoCore.innerHTML += `
+                    <div class="system-card zyto-input">
+                        <div class="system-header">
+                            <div class="system-name">${sys}</div>
+                            <input type="number" id="zytoCore${i}" step="0.01" placeholder="dR" style="width: 100px;">
+                        </div>
+                    </div>
+                `;
+            });
+
+            // ZYTO Lifestyle
+            const zytoLife = document.getElementById('zytoLifestyle');
+            zytoLifestyle.forEach((area, i) => {
+                zytoLife.innerHTML += `
+                    <div class="system-card zyto-input">
+                        <div class="system-header">
+                            <div class="system-name">${area}</div>
+                            <input type="number" id="zytoLife${i}" step="0.01" placeholder="dR" style="width: 100px;">
+                        </div>
+                    </div>
+                `;
+            });
+
+            // QRA
+            const qraP = document.getElementById('qraPoints');
+            const qraCard1 = document.createElement('div');
+            qraCard1.className = 'system-card qra-input';
+            qraCard1.innerHTML = '<div class="checkbox-group"></div>';
+            qraPoints.forEach((p, i) => {
+                qraCard1.querySelector('.checkbox-group').innerHTML += `
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="qraP${i}">
+                        <label>${p}</label>
+                    </div>
+                `;
+            });
+            qraP.appendChild(qraCard1);
+
+            const qraS = document.getElementById('qraSignatures');
+            const qraCard2 = document.createElement('div');
+            qraCard2.className = 'system-card qra-input';
+            qraCard2.innerHTML = '<div class="checkbox-group"></div>';
+            qraSignatures.forEach((s, i) => {
+                qraCard2.querySelector('.checkbox-group').innerHTML += `
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="qraS${i}">
+                        <label>${s}</label>
+                    </div>
+                `;
+            });
+            qraS.appendChild(qraCard2);
+
+            // Physical Exam
+            const physContainer = document.getElementById('physicalFindings');
+            Object.entries(physicalExam).forEach(([category, findings]) => {
+                let html = `<div class="section-header">${category}</div>`;
+                html += '<div class="system-card physical-input"><div class="checkbox-group">';
+                findings.forEach((f, i) => {
+                    html += `
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="phys${category}${i}">
+                            <label>${f}</label>
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+                physContainer.innerHTML += html;
+            });
+
+            document.getElementById('assessmentDate').valueAsDate = new Date();
+        }
+
+        document.getElementById('totalBurden').addEventListener('input', function() {
+            const score = parseInt(this.value) || 0;
+            const el = document.getElementById('burdenLevel');
+            if (score > 400) el.innerHTML = '<strong style="color: #dc3545;">HIGH BURDEN</strong>';
+            else if (score >= 200) el.innerHTML = '<strong style="color: #ffc107;">MODERATE BURDEN</strong>';
+            else if (score > 0) el.innerHTML = '<strong style="color: #28a745;">LOW BURDEN</strong>';
+            else el.innerHTML = '';
+        });
+
+        function generateReport() {
+            const name = document.getElementById('patientName').value || 'Patient';
+            const burden = document.getElementById('totalBurden').value || 0;
+            
+            const scores = [];
+            systems.forEach((sys, i) => {
+                const val = parseInt(document.getElementById(`fm${i}`).value) || 0;
+                if (val > 0) scores.push({name: sys, score: val});
+            });
+            scores.sort((a, b) => b.score - a.score);
+            const top3 = scores.slice(0, 3);
+
+            let html = `<h3>Patient: ${name}</h3>`;
+            html += `<p><strong>Total Symptom Burden:</strong> ${burden}</p>`;
+            html += '<h3 style="margin-top: 20px;">Top 3 Priority Systems:</h3>';
+            top3.forEach((s, i) => {
+                html += `<p>${i+1}. ${s.name}: ${s.score}%</p>`;
+            });
+
+            document.getElementById('reportContent').innerHTML = html;
+            showTab('report');
+            document.querySelectorAll('.tab')[5].classList.add('active');
+        }
+
+        function exportData() {
+            alert('Export functionality - saves assessment as JSON file');
+        }
+
+        function clearAll() {
+            if (confirm('Clear all data?')) {
+                document.querySelectorAll('input, textarea, select').forEach(el => {
+                    if (el.type === 'checkbox') el.checked = false;
+                    else el.value = '';
+                });
+                document.getElementById('burdenLevel').innerHTML = '';
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -32,6 +32,26 @@
             color: white;
             padding: 30px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
         }
 
         .header h1 {
@@ -246,7 +266,10 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏥 Root Health Integrated Assessment</h1>
+            <div class="header-logo">
+                <img src="Root Health Final Transparent.png" alt="Root Health Logo">
+            </div>
+            <h1>Root Health Integrated Assessment</h1>
             <p>Comprehensive Functional Medicine Evaluation System</p>
         </div>
 

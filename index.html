@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Root Health Integrated Assessment Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -194,8 +196,14 @@
             border-radius: 8px;
             margin: 20px 0 15px 0;
             font-weight: 600;
-            color: #495057;
-            border-left: 4px solid #667eea;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -215,51 +223,131 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .btn-secondary {
-            background: #6c757d;
+        .btn-success {
+            background: #28a745;
             color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .burden-meter {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .burden-bar {
+            height: 30px;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            border-radius: 15px;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .burden-indicator {
+            position: absolute;
+            width: 4px;
+            height: 40px;
+            background: #000;
+            top: -5px;
+            transition: left 0.3s;
+        }
+
+        .recommendation-section {
+            margin: 30px 0;
+        }
+
+        .priority-badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: inline-block;
             margin-left: 10px;
         }
 
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-
-        .total-burden {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .high-priority {
+            background: #dc3545;
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 20px;
         }
 
-        .zyto-input {
-            background: #e3f2fd;
-            border-left-color: #2196f3;
+        .moderate-priority {
+            background: #ffc107;
+            color: #000;
         }
 
-        .qra-input {
-            background: #f3e5f5;
-            border-left-color: #9c27b0;
+        .low-priority {
+            background: #28a745;
+            color: white;
         }
 
-        .physical-input {
-            background: #fff3e0;
-            border-left-color: #ff9800;
-        }
-
-        .vital-signs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+            .tabs, .button-group, .header {
+                display: none !important;
+            }
+            .content {
+                max-height: none;
+                overflow: visible;
+                padding: 20px;
+            }
+            .tab-content {
+                display: block !important;
+            }
+            .system-card, .patient-info {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            .recommendation-section {
+                page-break-before: auto;
+                page-break-after: auto;
+            }
+            h2, h3, h4 {
+                page-break-after: avoid;
+            }
+            table {
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
         }
     </style>
 </head>
@@ -267,7 +355,7 @@
     <div class="container">
         <div class="header">
             <div class="header-logo">
-                <img src="Root Health Final Transparent.png" alt="Root Health Logo">
+                <img src="https://i.imgur.com/TG7gibD.png" alt="Root Health Logo">
             </div>
             <h1>Root Health Integrated Assessment</h1>
             <p>Comprehensive Functional Medicine Evaluation System</p>
@@ -275,21 +363,20 @@
 
         <div class="tabs">
             <button class="tab active" onclick="showTab('patient')">Patient Info</button>
-            <button class="tab" onclick="showTab('fmlogics')">FM Logics</button>
-            <button class="tab" onclick="showTab('zyto')">ZYTO Scan</button>
-            <button class="tab" onclick="showTab('qra')">QRA</button>
             <button class="tab" onclick="showTab('physical')">Physical Exam</button>
+            <button class="tab" onclick="showTab('fm')">FM Logic</button>
+            <button class="tab" onclick="showTab('zyto')">ZYTO</button>
+            <button class="tab" onclick="showTab('qra')">QRA</button>
             <button class="tab" onclick="showTab('report')">Report</button>
         </div>
 
         <div class="content">
-            <!-- Patient Info Tab -->
             <div id="patient" class="tab-content active">
                 <h2>Patient Information</h2>
                 <div class="patient-info">
                     <div class="input-group">
                         <label>Patient Name</label>
-                        <input type="text" id="patientName" placeholder="Enter name">
+                        <input type="text" id="patientName">
                     </div>
                     <div class="input-group">
                         <label>Date of Birth</label>
@@ -299,334 +386,1258 @@
                         <label>Assessment Date</label>
                         <input type="date" id="assessmentDate">
                     </div>
-                    <div class="input-group">
-                        <label>Gender</label>
-                        <select id="patientGender">
-                            <option value="">Select</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>Chief Complaint</label>
-                    <textarea id="chiefComplaint" rows="3"></textarea>
                 </div>
             </div>
 
-            <!-- FM Logics Tab -->
-            <div id="fmlogics" class="tab-content">
-                <h2>FM Logics Questionnaire</h2>
-                <div class="total-burden">
-                    <h3>Total Symptom Burden Score</h3>
-                    <input type="number" id="totalBurden" placeholder="0" style="width: 150px; padding: 10px; font-size: 1.5em; text-align: center; margin-top: 10px;">
-                    <p id="burdenLevel" style="margin-top: 10px;"></p>
-                </div>
-                <div id="fmLogicsSystems"></div>
-            </div>
-
-            <!-- ZYTO Tab -->
-            <div id="zyto" class="tab-content">
-                <h2>ZYTO Bioenergetic Scan</h2>
-                <div class="system-card zyto-input">
-                    <div class="input-group">
-                        <label>Total Biomarkers</label>
-                        <input type="number" id="zytoTotal" placeholder="e.g., 198">
-                    </div>
-                    <div class="input-group">
-                        <label>Range Value</label>
-                        <input type="number" id="zytoRange" placeholder="e.g., 8.78" step="0.01">
-                    </div>
-                    <div class="input-group">
-                        <label>In Range</label>
-                        <input type="number" id="zytoInRange" placeholder="e.g., 89">
-                    </div>
-                    <div class="input-group">
-                        <label>Out of Range</label>
-                        <input type="number" id="zytoOutRange" placeholder="e.g., 109">
-                    </div>
-                </div>
-
-                <div class="section-header">4 Core Body Systems</div>
-                <div id="zytoCoreSystem"></div>
-
-                <div class="section-header">6 Lifestyle Areas</div>
-                <div id="zytoLifestyle"></div>
-            </div>
-
-            <!-- QRA Tab -->
-            <div id="qra" class="tab-content">
-                <h2>QRA - Quantum Reflex Analysis</h2>
-                <div class="section-header">Organ Points</div>
-                <div id="qraPoints"></div>
-                
-                <div class="section-header">Energetic Signatures</div>
-                <div id="qraSignatures"></div>
-            </div>
-
-            <!-- Physical Exam Tab -->
             <div id="physical" class="tab-content">
-                <h2>Physical Examination</h2>
+                <h2>FM Physical Examination</h2>
                 
-                <div class="section-header">Vital Signs</div>
-                <div class="system-card physical-input">
-                    <div class="vital-signs">
+                <div class="system-card">
+                    <h3>Vital Signs</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
                         <div class="input-group">
-                            <label>Temp (°F)</label>
-                            <input type="number" id="temperature" step="0.1">
+                            <label>Temperature (°F)</label>
+                            <input type="number" id="temperature" step="0.1" placeholder="97.8-99.0">
                         </div>
                         <div class="input-group">
-                            <label>BP Sitting</label>
-                            <input type="text" id="bpSitting" placeholder="120/80">
+                            <label>BP Sitting (e.g. 120/80)</label>
+                            <input type="text" id="bpSitting">
                         </div>
                         <div class="input-group">
-                            <label>BP Standing</label>
-                            <input type="text" id="bpStanding" placeholder="130/85">
+                            <label>BP Standing (e.g. 125/82)</label>
+                            <input type="text" id="bpStanding">
                         </div>
                         <div class="input-group">
-                            <label>Heart Rate</label>
+                            <label>Heart Rate (bpm)</label>
                             <input type="number" id="heartRate">
                         </div>
                         <div class="input-group">
-                            <label>Resp Rate</label>
+                            <label>Respiratory Rate (/min)</label>
                             <input type="number" id="respRate">
                         </div>
                         <div class="input-group">
                             <label>Weight (lbs)</label>
-                            <input type="number" id="weight">
+                            <input type="number" id="weight" step="0.1">
                         </div>
                     </div>
-                    <div class="checkbox-group" style="margin-top: 15px;">
+                    <div class="checkbox-item" style="margin-top: 20px;">
+                        <input type="checkbox" id="ragland">
+                        <label for="ragland"><strong>Ragland's Test Positive</strong> (Systolic BP failed to rise 10+ mmHg or dropped when standing - indicates adrenal dysfunction)</label>
+                    </div>
+                    <div style="margin-top: 15px;">
                         <div class="checkbox-item">
-                            <input type="checkbox" id="ragland">
-                            <label>Ragland's Test Positive</label>
+                            <input type="checkbox" id="tempDysregulation">
+                            <label for="tempDysregulation">Temperature Dysregulation (&lt;97.8°F or &gt;99°F)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="bradycardia">
+                            <label for="bradycardia">Bradycardia</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tachycardia">
+                            <label for="tachycardia">Tachycardia</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">Functional Medicine Specific Findings</div>
+                
+                <div class="system-card">
+                    <h4>Head and Neck</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hairLoss">
+                            <label for="hairLoss">Hair Loss</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="thyroidEnlarged">
+                            <label for="thyroidEnlarged">Thyroid Enlarged/Nodular</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="lymphNodes">
+                            <label for="lymphNodes">Lymph Node Swelling</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="darkCircles">
-                            <label>Dark circles under eyes</label>
+                            <label for="darkCircles">Dark Circles Under Eyes</label>
                         </div>
                     </div>
                 </div>
 
-                <div id="physicalFindings"></div>
-            </div>
+                <div class="system-card">
+                    <h4>Abdomen & Digestion</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="abdominalTenderness">
+                            <label for="abdominalTenderness">Abdominal Tenderness</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="bloating">
+                            <label for="bloating">Bloating (especially post-meal)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ruqPain">
+                            <label for="ruqPain">Right Upper Quadrant Pain</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hepatomegaly">
+                            <label for="hepatomegaly">Hepatomegaly/Splenomegaly</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="jaundice">
+                            <label for="jaundice">Jaundice</label>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Report Tab -->
-            <div id="report" class="tab-content">
-                <h2>Assessment Summary</h2>
-                <div id="reportContent">
-                    <p style="text-align: center; padding: 40px; color: #6c757d;">
-                        Complete all assessment tabs, then click "Generate Report" below.
-                    </p>
+                <div class="system-card">
+                    <h4>Musculoskeletal & Inflammation</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="jointPain">
+                            <label for="jointPain">Joint Pain</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="jointSwelling">
+                            <label for="jointSwelling">Joint Swelling/Heat</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="muscleTenderness">
+                            <label for="muscleTenderness">Muscle Tenderness/Weakness</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="system-card">
+                    <h4>Cardiovascular & Peripheral Vascular</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="edema">
+                            <label for="edema">Edema (specify location in notes)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="poorCirculation">
+                            <label for="poorCirculation">Poor Circulation/Cold Extremities</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="varicoseVeins">
+                            <label for="varicoseVeins">Varicose Veins</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="system-card">
+                    <h4>Skin & Nails (FM Specific)</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="skinIssues">
+                            <label for="skinIssues">Rashes/Eczema/Skin Issues</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acanthosis">
+                            <label for="acanthosis">Acanthosis Nigricans</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="skinTags">
+                            <label for="skinTags">Skin Tags</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="keratosis">
+                            <label for="keratosis">Hyperkeratosis Pilaris</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="nailRidges">
+                            <label for="nailRidges">Nail Ridging (longitudinal/horizontal)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="nailWhiteSpots">
+                            <label for="nailWhiteSpots">White Spots on Nails</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="meesLines">
+                            <label for="meesLines">Mees Lines (horizontal white lines)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="beausLines">
+                            <label for="beausLines">Beau's Lines (horizontal grooves)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="system-card">
+                    <h4>Neurological & Mental Status</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="brainFog">
+                            <label for="brainFog">Brain Fog/Cognitive Issues</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="anxiety">
+                            <label for="anxiety">Anxiety</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="depression">
+                            <label for="depression">Depression</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tremors">
+                            <label for="tremors">Tremors</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="system-card">
+                    <h4>Additional Clinical Observations</h4>
+                    <div class="input-group">
+                        <label>Clinical Notes</label>
+                        <textarea id="clinicalNotes" rows="4" placeholder="Document additional findings, abnormalities, or observations..."></textarea>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="action-buttons">
-            <button class="btn btn-primary" onclick="generateReport()">📊 Generate Report</button>
-            <button class="btn btn-secondary" onclick="exportData()">💾 Export Data</button>
-            <button class="btn btn-secondary" onclick="clearAll()">🔄 Clear All</button>
+            <div id="fm" class="tab-content">
+                <h2>FM Logic Assessment</h2>
+                <p style="margin-bottom: 20px; color: #6c757d;">Enter the percentage scores from the FM Logic questionnaire for each body system.</p>
+                <div id="fmSystems"></div>
+                
+                <div class="burden-meter">
+                    <h3>Total Symptom Burden Score</h3>
+                    <div class="input-group">
+                        <input type="number" id="totalBurden" min="0" max="1000" onchange="updateBurdenMeter()">
+                    </div>
+                    <div class="burden-bar">
+                        <div class="burden-indicator" id="burdenIndicator"></div>
+                    </div>
+                    <div id="burdenLevel" style="margin-top: 10px; font-weight: 600;"></div>
+                </div>
+            </div>
+
+            <div id="zyto" class="tab-content">
+                <h2>ZYTO Scan Results</h2>
+                
+                <div class="section-header">4 Core Body Systems for Wellness</div>
+                <p style="margin-bottom: 15px; color: #6c757d;">The 4 core systems critical to maintaining health. Enter dR (Delta Response) values - how much each system deviates from your individual range value.</p>
+                <div id="zytoCoreInputs"></div>
+
+                <div class="section-header" style="margin-top: 30px;">Lifestyle Areas</div>
+                <p style="margin-bottom: 15px; color: #6c757d;">Enter dR values for lifestyle stressor areas.</p>
+                <div id="zytoLifestyleInputs"></div>
+            </div>
+
+            <div id="qra" class="tab-content">
+                <h2>QRA Findings</h2>
+                
+                <div class="section-header">Positive QRA Points</div>
+                <div class="checkbox-group" id="qraPointsList"></div>
+
+                <div class="section-header">Positive Signatures (Food Intolerances, Toxins)</div>
+                <div class="checkbox-group" id="qraSignaturesList"></div>
+            </div>
+
+            <div id="report" class="tab-content">
+                <div id="reportContent">
+                    <p style="text-align: center; padding: 40px; color: #6c757d;">
+                        Complete all assessment tabs, then click "Generate Report" below to get personalized lab and supplement recommendations.
+                    </p>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+                    <button class="btn btn-info" onclick="window.print()">Print Report</button>
+                    <button class="btn btn-success" onclick="exportPDF()">Export as PDF</button>
+                    <button class="btn btn-danger" onclick="clearAll()">Clear All Data</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        const systems = [
-            "Dietary Factors", "Nutritional Deficiency", "Anemia", "Food Allergies",
-            "Liver/Gallbladder Dysfunction", "Digestive Enzyme Insufficiency",
-            "Small Intestine Dysfunction", "Large Intestine Dysfunction",
-            "Kidney Dysfunction", "Thyroid Dysfunction", "Adrenal Dysfunction",
-            "Blood Sugar Dysregulation", "Reproductive Hormone Dysfunction",
-            "Immune System Dysfunction", "Inflammation", "Infection",
-            "Cardiovascular Disease", "Environmental Toxin Exposure",
-            "Psychological Disorder", "Mycotoxin"
-        ];
+const systems = [
+    'Small/Large Intestine Dysfunction',
+    'Inflammation',
+    'Digestive Enzyme Insufficiency',
+    'Infection',
+    'Dietary Factors',
+    'Reproductive Hormone Dysfunction',
+    'Food Allergy',
+    'Adrenal Dysfunction',
+    'Thyroid Dysfunction',
+    'Blood Sugar Dysregulation',
+    'Nutritional Deficiencies',
+    'Immune System Dysfunction',
+    'Kidney Dysfunction',
+    'Environmental Toxin Exposure',
+    'Liver/Gallbladder Dysfunction',
+    'Cardiovascular Disease',
+    'Mycotoxins',
+    'Psychological Disorder',
+    'Anemia'
+];
 
-        const zytoCoreSystem = [
-            "Detoxification System", "Gastrointestinal System",
-            "Hormonal/Endocrine System", "Immune System"
-        ];
+const zytoCoreSystems = [
+    'Detoxification System',
+    'Gastrointestinal System',
+    'Hormonal/Endocrine System',
+    'Immune System'
+];
 
-        const zytoLifestyle = [
-            "Diet & Nutrition", "Hydration", "Inflammation",
-            "Mental/Emotional Stress", "Sleep", "Toxic Stress"
-        ];
+const zytoLifestyleAreas = [
+    'Diet & Nutrition',
+    'Hydration',
+    'Inflammation',
+    'Mental/Emotional Stress',
+    'Sleep',
+    'Toxic Stress'
+];
 
-        const qraPoints = [
-            "Kidney", "Brain", "Hypothalamus", "Pituitary Gland", "Occipital Lobe",
-            "Cell Energy", "Stomach", "Lymphatics", "Parathyroid", "Spine",
-            "Spleen", "Pancreas", "Liver", "Gallbladder", "Thyroid",
-            "Ovaries/Testes", "Uterus/Prostate", "Adrenal", "Thymus",
-            "Small Intestines", "Large Intestines", "Heart", "Lungs", "Bladder",
-            "Eye", "Parotid Gland", "Brain 2", "Brain 3",
-            "Frontal Sinus", "Maxillary Sinus", "Ethmoid Sinus",
-            "Deep Sleep", "Circulation"
-        ];
+const qraPoints = [
+    "Kidney", "Brain", "Hypothalamus", "Pituitary Gland", "Occipital Lobe",
+    "Cell Energy", "Stomach", "Lymphatics", "Parathyroid", "Spine",
+    "Spleen", "Pancreas", "Liver", "Gallbladder", "Thyroid",
+    "Ovaries/Testes", "Uterus/Prostate", "Adrenal", "Thymus",
+    "Small Intestines", "Large Intestines", "Heart", "Lungs", "Bladder",
+    "Eye", "Parotid Gland", "Brain 2", "Brain 3",
+    "Frontal Sinus", "Maxillary Sinus", "Ethmoid Sinus",
+    "Deep Sleep", "Circulation"
+];
 
-        const qraSignatures = [
-            "Cytokines", "Homocysteine", "Inflammatory markers", "Ammonia",
-            "Heavy Metals", "Bacteria", "Fungus", "Parasite", "Virus",
-            "Lyme", "Mycotoxin (Mold)", "Environmental toxins", "Food"
-        ];
+const qraSignatures = [
+    "Cytokines", "Homocysteine", "Inflammatory markers", "Ammonia",
+    "Heavy Metals", "Bacteria", "Fungus", "Parasite", "Virus",
+    "Lyme", "Mycotoxin (Mold)", "Environmental toxins", "Food"
+];
 
-        const physicalExam = {
-            "HEENT": ["Scleral icterus", "Conjunctival pallor", "Geographic tongue", "Angular cheilitis"],
-            "Neck": ["Thyroid enlargement", "Lymphadenopathy"],
-            "Cardiovascular": ["Heart murmur", "Poor circulation", "Weak pulses"],
-            "Respiratory": ["Wheezing", "Crackles"],
-            "Abdominal": ["RUQ tenderness", "Bloating", "Organomegaly"],
-            "MSK": ["Joint swelling", "Joint pain", "Reduced ROM"],
-            "Skin/Nails": ["Easy bruising", "Dry skin", "White spots on nails", "Brittle nails"],
-            "Neuro": ["Brain fog", "Peripheral neuropathy", "Balance issues"],
-            "Hair": ["Hair loss", "Brittle hair", "Eyebrow thinning"]
-        };
+const protocols = {
+    'Small/Large Intestine Dysfunction': {
+        supplements: [
+            'Physica Energetics: Flora Syntropy (probiotic 50 billion CFU)',
+            'Physica Energetics: Saccharomyces boulardii Forte',
+            'Physica Energetics: Glutamine Complex PLG-U Powder (gut healing)',
+            'Premier Research Labs: Digest (digestive support)',
+            'Premier Research Labs: HCL (if over age 30)',
+            'Premier Research Labs: Max B-ND (gut support)',
+            'Premier Research Labs: Probiotic Caps or AloePro'
+        ],
+        labs: {
+            primary: [
+                'Vibrant Wellness: Gut Zoomer Complete (comprehensive microbiome: 300+ commensal bacteria, 28 bacterial pathogens, 15 helminths, 14 protozoans, 6 fungi, 13 viruses, gut inflammatory markers, intestinal permeability/zonulin, pancreatic elastase, secretory IgA, diversity indices)',
+                'LabCorp: Comprehensive Metabolic Panel (160020)',
+                'LabCorp: Lipase (001503)'
+            ],
+            secondary: [
+                'Vibrant Wellness: Food Sensitivity Panel',
+                'LabCorp: H. pylori Antibody IgG (070625)',
+                'LabCorp: Celiac Panel (164010)',
+                'Genova: SIBO Test using Lactulose',
+                'Dysbiosis component of Organic Acids'
+            ],
+            advanced: [
+                'Vibrant Wellness: Wheat Zoomer (includes intestinal permeability panel)',
+                'Vibrant Wellness: Zonulin (intestinal permeability - standalone test)',
+                'Parasite Testing',
+                'GX Sciences: GI panel'
+            ]
+        },
+        qraMapping: ['Small Intestines', 'Large Intestines', 'Stomach', 'Gallbladder']
+    },
+    'Inflammation': {
+        supplements: [
+            'Physica Energetics: Bio-A Curcumin PhytoNanosome',
+            'Physica Energetics: Inflamma LF',
+            'Physica Energetics: Bio-Omega 3 or Omega GOLD (high EPA)',
+            'Premier Research Labs: S.O.D. (antioxidant)',
+            'Premier Research Labs: Max B-ND (methylation support)',
+            'Premier Research Labs: EFAs (essential fatty acids)'
+        ],
+        labs: {
+            primary: [
+                'LabCorp: C-Reactive Protein High Sensitivity (120766)',
+                'LabCorp: Ferritin (004598)',
+                'LabCorp: Vitamin D 25-Hydroxy (081950)',
+                'LabCorp: Homocysteine (706994)',
+                'LabCorp: Uric Acid (001057)',
+                'LabCorp: RDW (part of CBC)'
+            ],
+            secondary: [
+                'LabCorp: Interleukin-6 (163641)',
+                'Tumor Necrosis Factor'
+            ],
+            advanced: [
+                'Vibrant Wellness: Neural Zoomer Plus (48 neurological autoantibodies including brain inflammation, autoimmunity, blood-brain barrier disruption)',
+                'Cytokine Response Profile (Diagnostic Solutions)',
+                'GX Sciences: Immune/Auto-immune/Inflammatory panel'
+            ]
+        },
+        qraMapping: ['Lymphatics', 'Inflammatory markers', 'Cytokines']
+    },
+    'Digestive Enzyme Insufficiency': {
+        supplements: [
+            'Physica Energetics: Pancrea LF',
+            'Physica Energetics: CataZyme-7 or CataZyme-U',
+            'Physica Energetics: HepataGest Powder (comprehensive enzyme support)',
+            'Premier Research Labs: Digest (full spectrum enzymes)',
+            'Premier Research Labs: HCL (if over age 30)',
+            'Premier Research Labs: Pancreatin 8x Plus'
+        ],
+        labs: {
+            primary: [
+                'Vibrant Wellness: Gut Zoomer (comprehensive microbiome analysis including pancreatic elastase, pathogens, inflammation, zonulin, secretory IgA)',
+                'LabCorp: Lipase (001503)',
+                'LabCorp: Amylase (001008)',
+                'Comprehensive stool analysis (elastase, chymotrypsin)'
+            ],
+            secondary: [
+                'LabCorp: Trypsin (017483)'
+            ],
+            advanced: [
+                'Heidelberg test for stomach acid',
+                'SIBO breath test'
+            ]
+        },
+        qraMapping: ['Pancreas', 'Stomach', 'Gallbladder']
+    },
+    'Infection': {
+        supplements: [
+            'Physica Energetics: Xeno BioForce (immune modulation)',
+            'Physica Energetics: Wild Oregano Oil',
+            'Physica Energetics: Olive Leaf Intrinsic (antiviral)',
+            'Premier Research Labs: Nucleo Immune (immune support)',
+            'Premier Research Labs: AloeMannan-FX or Colostrum-IgG',
+            'Premier Research Labs: Cat\'s Claw Immune'
+        ],
+        labs: {
+            primary: [
+                'LabCorp: CD57 Panel (505026)',
+                'LabCorp: Epstein Barr Virus Profile Full Diagnostic (240610)',
+                'Vibrant Wellness: Tickborne Disease Panel'
+            ],
+            secondary: [
+                'LabCorp: EBV Early Antigen Ab IgG (096248)',
+                'LabCorp: CMV IgG (006627)',
+                'iGeneX: Lyme Testing Panel (TBD4IBL)'
+            ],
+            advanced: [
+                'Vibrant Wellness: Viral Infection Panel',
+                'Vibrant Wellness: Gut Zoomer (parasites and pathogens)',
+                'Vibrant Wellness: Mycotoxins Test (tests for 29 mycotoxins including aflatoxins, trichothecenes, ochratoxin A, gliotoxin)'
+            ]
+        },
+        qraMapping: ['Virus', 'Bacteria', 'Parasite', 'Mycotoxin (Mold)', 'Lyme']
+    },
+    'Dietary Factors': {
+        supplements: [
+            'Physica Energetics: Vita LF Capsules or Powder (whole food multivitamin)',
+            'Physica Energetics: BioHealth Matrix (comprehensive nutrients)',
+            'Physica Energetics: HepataGest Powder (multivitamin/mineral/enzyme)',
+            'Premier Research Labs: Max Stress B (B-complex)',
+            'Premier Research Labs: Vitamin C (buffered)',
+            'Targeted nutrient repletion based on testing'
+        ],
+        labs: {
+            primary: [
+                'Vibrant Wellness: Micronutrient Panel',
+                'LabCorp: Comprehensive Metabolic Panel (160020)',
+                'Genova: NutrEval'
+            ],
+            secondary: [
+                'LabCorp: Vitamin D 25-Hydroxy (081950)',
+                'LabCorp: Vitamin B12 (004655)',
+                'LabCorp: Folate (004671)',
+                'Pro7 Nutrigenomic Report (GX Sciences or Nutrition Genome)'
+            ],
+            advanced: [
+                'LabCorp: Magnesium RBC (001875)',
+                'LabCorp: Zinc Serum (001503)',
+                'Organic Acids Test',
+                'Amino acid analysis'
+            ]
+        },
+        qraMapping: []
+    },
+    'Reproductive Hormone Dysfunction': {
+        supplements: [
+            'Physica Energetics: DIM Liposome (estrogen metabolism)',
+            'Physica Energetics: DHEA Liposomal Drops',
+            'Physica Energetics: Pregnenolone Liposomal Drops',
+            'Physica Energetics: Maca Intrinsic (hormone balance)',
+            'Premier Research Labs: Fem Balance-FX (female hormones)',
+            'Premier Research Labs: Folic Acid-ND'
+        ],
+        labs: {
+            primary: [
+                'DUTCH Complete Hormone Test (Precision Analytical)',
+                'Vibrant Wellness: Hormones Panel'
+            ],
+            secondary: [
+                'LabCorp: FSH (004366), LH (004416), Estradiol (004515)',
+                'LabCorp: Progesterone (004317)',
+                'LabCorp: Testosterone Total (004226)',
+                'Rhine Labs: Hormone panels'
+            ],
+            advanced: [
+                'LabCorp: Sex Hormone Binding Globulin (082016)',
+                'ZRT Laboratory: Hormone Testing',
+                'GX Sciences: Women\'s Health Panel'
+            ]
+        },
+        qraMapping: ['Ovaries/Testes', 'Uterus/Prostate']
+    },
+    'Food Allergy': {
+        supplements: [
+            'Physica Energetics: Glutamine Complex PLG-U (gut healing)',
+            'Physica Energetics: Flora Syntropy',
+            'Physica Energetics: GALT Fortifier',
+            'Premier Research Labs: Probiotic Caps',
+            'Premier Research Labs: Digestase-SP (gut healing)',
+            'Premier Research Labs: Allicidin'
+        ],
+        labs: {
+            primary: [
+                'Vibrant Wellness: Food Sensitivity Panel (IgG/IgA to 200+ foods)',
+                'Vibrant Wellness: Gut Zoomer Complete (microbiome health, pathogens, inflammation, gut antibodies including anti-gliadin)',
+                'FIT Test (KBM Diagnostics FIT-176)'
+            ],
+            secondary: [
+                'LabCorp: Food Allergen Profile (602758)',
+                'Vibrant Wellness: Wheat Zoomer',
+                'MRT-Mediator Release Test (NOW LEAP)'
+            ],
+            advanced: [
+                'Vibrant Wellness: Lectin Zoomer',
+                'Vibrant Wellness: Dairy Zoomer',
+                'IgG/IgE comprehensive food panels'
+            ]
+        },
+        qraMapping: ['Food', 'Small Intestines', 'Large Intestines']
+    },
+    'Adrenal Dysfunction': {
+        supplements: [
+            'Physica Energetics: Adrenal LF',
+            'Physica Energetics: HPA Axis LF',
+            'Physica Energetics: Glycine Composite',
+            'Premier Research Labs: AdrenaVen (adrenal support)',
+            'Premier Research Labs: Adaptogen-R3 (adaptogenic herbs)',
+            'Premier Research Labs: Max B-ND (B vitamins for stress)'
+        ],
+        labs: {
+            primary: [
+                'DiagnosTechs: Adrenal Stress Index',
+                'Precision Analytical: DUTCH Adrenal Test',
+                'LabCorp: Cortisol AM (004051)',
+                '4-point salivary cortisol testing'
+            ],
+            secondary: [
+                'LabCorp: DHEA-Sulfate (004020)',
+                'LabCorp: Comprehensive Metabolic Panel (160020)'
+            ],
+            advanced: [
+                'DUTCH Plus (includes metabolites)',
+                'LabCorp: ACTH Stimulation Test',
+                'DiagnosTechs: HPA Axis comprehensive testing'
+            ]
+        },
+        qraMapping: ['Adrenal']
+    },
+    'Thyroid Dysfunction': {
+        supplements: [
+            'Physica Energetics: Thyro LF',
+            'Physica Energetics: Hypothal Code',
+            'Physica Energetics: Solray-D3 + K2 Liposome Spray',
+            'Physica Energetics: Zinc-Oro Liposome Composite (for thyroid conversion)',
+            'Premier Research Labs: ThyroVen',
+            'Premier Research Labs: Green Tea-ND (thyroid support)'
+        ],
+        labs: {
+            primary: [
+                'LabCorp: Thyroid Panel with TSH (006676)',
+                'LabCorp: Free T3 (010389)',
+                'LabCorp: Free T4 (001974)',
+                'LabCorp: Total T4, Total T3',
+                'LabCorp: Reverse T3 (070104)',
+                'LabCorp: TPO Antibodies (006676)'
+            ],
+            secondary: [
+                'LabCorp: Thyroglobulin Antibodies (006611)',
+                'Vibrant Wellness: Thyroid Panel',
+                'LabCorp: Thyroid-stimulating immunoglobulin (TSI) if Graves suspected'
+            ],
+            advanced: [
+                'Vibrant Wellness: Complete Thyroid Panel',
+                'Thyroid ultrasound'
+            ]
+        },
+        qraMapping: ['Thyroid', 'Hypothalamus']
+    },
+    'Blood Sugar Dysregulation': {
+        supplements: [
+            'Physica Energetics: Jambola (blood sugar support)',
+            'Physica Energetics: Glycine Composite',
+            'Premier Research Labs: Ginseng-FX (blood sugar regulation)',
+            'Premier Research Labs: PancreaVen (pancreatic support)',
+            'Physica Energetics: Phyto Antiox (chromium, alpha-lipoic acid)',
+            'Premier Research Labs: Cardio-ND (circulatory support)'
+        ],
+        labs: {
+            primary: [
+                'LabCorp: Hemoglobin A1C (001453)',
+                'LabCorp: Fasting Insulin (004333)',
+                'LabCorp: Fasting Glucose (001032)',
+                'LabCorp: Lipid Panel (303756)'
+            ],
+            secondary: [
+                'LabCorp: C-Peptide (004501)',
+                'Oral Glucose Tolerance Test',
+                'HOMA-IR calculation',
+                'Array 6-Diabetes Autoimmune Reactivity Screen (Cyrex Labs)'
+            ],
+            advanced: [
+                'Continuous Glucose Monitoring',
+                'LabCorp: Advanced Lipid Panel',
+                'Organic Acids (Genova) for metabolic markers'
+            ]
+        },
+        qraMapping: ['Pancreas']
+    },
+    'Nutritional Deficiencies': {
+        supplements: [
+            'Physica Energetics: Vita LF Capsules or Powder',
+            'Physica Energetics: BioHealth Matrix',
+            'Physica Energetics: HepataGest Powder',
+            'Premier Research Labs: Max Stress B',
+            'Targeted repletion based on specific deficiencies'
+        ],
+        labs: {
+            primary: [
+                'Vibrant Wellness: Micronutrient Panel',
+                'Genova: NutrEval'
+            ],
+            secondary: [
+                'Pro7 Nutrigenomic Report (GX Sciences or Nutrition Genome)',
+                'LabCorp: Comprehensive Metabolic Panel (160020)',
+                'LabCorp: Vitamin D, B12, Folate'
+            ],
+            advanced: [
+                'RBC minerals, fat-soluble vitamins',
+                'Amino acid analysis'
+            ]
+        },
+        qraMapping: []
+    },
+    'Immune System Dysfunction': {
+        supplements: [
+            'Physica Energetics: Xeno BioForce',
+            'Physica Energetics: Thymus LF',
+            'Physica Energetics: Spleen LF',
+            'Premier Research Labs: Nucleo Immune',
+            'Premier Research Labs: Colostrum-IgG',
+            'Premier Research Labs: AloeMannan-FX'
+        ],
+        labs: {
+            primary: [
+                'LabCorp: CD57',
+                'LabCorp: Immunoglobulins IgA, IgE, IgG, IgM Quantitative Serum (002295)',
+                'LabCorp: Complete Blood Count with Diff (005009)'
+            ],
+            secondary: [
+                'Array 12 (Cyrex Labs)',
+                'Cytokine Response Profile (Diagnostic Solutions)'
+            ],
+            advanced: [
+                'GX Sciences Immune/Auto-immune/Inflammatory panel'
+            ]
+        },
+        qraMapping: ['Spleen', 'Lymphatics', 'Thymus']
+    },
+    'Kidney Dysfunction': {
+        supplements: [
+            'Physica Energetics: Chanca Piedra Intrinsic',
+            'Physica Energetics: Hydrangea Intrinsic',
+            'Premier Research Labs: RenaVen',
+            'Premier Research Labs: Kidney-ND',
+            'Adequate hydration'
+        ],
+        labs: {
+            primary: [
+                'LabCorp: BUN, Creatinine, Glomerular Filtration Rate (GFR)',
+                'LabCorp: Comprehensive Metabolic Panel (160020)'
+            ],
+            secondary: [
+                'Urinalysis, Microalbumin',
+                'Electrolytes'
+            ],
+            advanced: [
+                '24-hour urine collection',
+                'Kidney ultrasound'
+            ]
+        },
+        qraMapping: ['Kidney', 'Bladder']
+    },
+    'Environmental Toxin Exposure': {
+        supplements: [
+            'Physica Energetics: MetaChlor (heavy metals)',
+            'Physica Energetics: Lipo-Tox',
+            'Physica Energetics: Glutathione (GSH) Liposome',
+            'Physica Energetics: NAC Forte',
+            'Premier Research Labs: HCL Detox',
+            'Binding agents (chlorella, zeolite, charcoal)'
+        ],
+        labs: {
+            primary: [
+                'QuickSilver Tri-Mercury Test',
+                'Total Toxic Blood Profile'
+            ],
+            secondary: [
+                'GPL-Tox Toxic Non-metal Chemical Profile (Great Plains)',
+                'Glyphosate Test',
+                'LabCorp: Heavy Metal Panel (Hair or Urine)'
+            ],
+            advanced: [
+                'Vibrant America Tox Screen',
+                'Trace Elements',
+                'GX Sciences Detoxification panel',
+                'Organic Acids Test'
+            ]
+        },
+        qraMapping: ['Liver', 'Kidney', 'Heavy Metals', 'Environmental toxins']
+    },
+    'Liver/Gallbladder Dysfunction': {
+        supplements: [
+            'Physica Energetics: Lipo-Tox',
+            'Physica Energetics: HepataGest Powder',
+            'Physica Energetics: Nat Body CLR',
+            'Physica Energetics: NAC Forte',
+            'Premier Research Labs: Liver-ND',
+            'Premier Research Labs: Gallbladder-ND'
+        ],
+        labs: {
+            primary: [
+                'LabCorp: ALT, ALP, AST',
+                'LabCorp: Bilirubin, Albumin, Total Protein',
+                'LabCorp: GGT (001032)'
+            ],
+            secondary: [
+                'Detoxification component of Organic Acids (Genova)',
+                'Hepatic Detox Profile (Doctors Data)'
+            ],
+            advanced: [
+                'Hepatitis Profile',
+                'MTHFR testing'
+            ]
+        },
+        qraMapping: ['Liver', 'Gallbladder']
+    },
+    'Cardiovascular Disease': {
+        supplements: [
+            'Physica Energetics: CoQ10 Liposome Tincture',
+            'Physica Energetics: Hawthorn Intrinsic',
+            'Physica Energetics: L-Arginine SR',
+            'Physica Energetics: Magnesium BisGlycinate + L-Taurine',
+            'Premier Research Labs: Cardio-ND',
+            'Premier Research Labs: CircuZyme'
+        ],
+        labs: {
+            primary: [
+                'LabCorp: NMR Lipoprofile (123638)',
+                'LabCorp: Lipoprotein (a) (120188)',
+                'LabCorp: Apolipoprotein Assessment (216010)',
+                'LabCorp: hs-CRP (120766)'
+            ],
+            secondary: [
+                'LabCorp: Homocysteine (706994)',
+                'LabCorp: Lp-PLA2 Activity (123283)',
+                'LabCorp: CRP-Cardiac (120766)'
+            ],
+            advanced: [
+                'Fibrinogen, Oxidized LDL',
+                'Myeloperoxidase, ADMA/SDMA, TMAO, BNP',
+                'Vibrant Wellness: CardioMetabolic Panel',
+                'CT Coronary Calcium Score'
+            ]
+        },
+        qraMapping: ['Heart', 'Circulation']
+    },
+    'Mycotoxins': {
+        supplements: [
+            'Physica Energetics: Lipo-Tox',
+            'Physica Energetics: Nat Body CLR and Nat Colon CLR',
+            'Physica Energetics: Glutathione (GSH) Liposome',
+            'Premier Research Labs: MycoPul (binders)',
+            'Binders (cholestyramine, charcoal, clay)',
+            'Antifungals (caprylic acid, undecylenic acid)'
+        ],
+        labs: {
+            primary: [
+                'Vibrant Wellness: Mycotoxins Test (29 mycotoxins: aflatoxins, trichothecenes, ochratoxin A, gliotoxin, zearalenone)',
+                'Environmental testing (Envirobiomics #7)',
+                'VCS Screening Test'
+            ],
+            secondary: [
+                'LabCorp: Complement C3a (004220)',
+                'LabCorp: C4a (004330)',
+                'LabCorp: MMP-9 (500124)',
+                'LabCorp: MSH (010421)'
+            ],
+            advanced: [
+                'RealTimeLab Mycotoxin Test',
+                'Great Plains MycoTOX',
+                'HLA-DR genetic testing',
+                'MARCoNS'
+            ]
+        },
+        qraMapping: ['Mycotoxin (Mold)', 'Fungus', 'Liver', 'Kidney']
+    },
+    'Psychological Disorder': {
+        supplements: [
+            'Physica Energetics: ASuRA Brain',
+            'Physica Energetics: Bliss PhytoNanosome',
+            'Physica Energetics: Lithium-Oro Liposome Composite',
+            'Physica Energetics: 5-HTP Liposome Spray',
+            'Premier Research Labs: NeuroVen',
+            'Adaptogenic herbs for stress'
+        ],
+        labs: {
+            primary: [
+                'Neurotransmitter testing',
+                'Organic Acids Test'
+            ],
+            secondary: [
+                'Nutrient assessment for brain health',
+                'LabCorp: Vitamin B12 (004655)',
+                'LabCorp: Folate (004671)'
+            ],
+            advanced: [
+                'Genetic testing for neurotransmitter pathways',
+                'DUTCH neurotransmitter metabolites'
+            ]
+        },
+        qraMapping: ['Brain', 'Hypothalamus', 'Brain 2', 'Brain 3']
+    },
+    'Anemia': {
+        supplements: [
+            'Iron supplementation (with vitamin C for absorption)',
+            'Physica Energetics: Vita LF (B12, folate)',
+            'Physica Energetics: Vitamin B Coenzyme Complex Liposome',
+            'Premier Research Labs: Folic Acid-ND',
+            'Premier Research Labs: B12-ND',
+            'Copper if deficient'
+        ],
+        labs: {
+            primary: [
+                'LabCorp: Ferritin (004598)',
+                'LabCorp: Iron, TIBC, Transferrin, Transferrin Saturation',
+                'LabCorp: CBC with differential and platelet count'
+            ],
+            secondary: [
+                'Serum Copper, Ceruloplasmin',
+                'LabCorp: Vitamin B12 (004655)',
+                'LabCorp: Folate (004671)'
+            ],
+            advanced: [
+                'RBC Magnesium',
+                'Plasma Zinc',
+                'Vitamin A (Retinol)'
+            ]
+        },
+        qraMapping: ['Spleen']
+    }
+};
 
-        function showTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
-
-        function init() {
-            // FM Logics
-            const fmContainer = document.getElementById('fmLogicsSystems');
-            systems.forEach((sys, i) => {
-                fmContainer.innerHTML += `
-                    <div class="system-card">
-                        <div class="system-header">
-                            <div class="system-name">${sys}</div>
-                            <div class="score-input">
-                                <input type="number" id="fm${i}" min="0" max="100" placeholder="0">
-                                <span>%</span>
-                            </div>
-                        </div>
+function init() {
+    const fmDiv = document.getElementById('fmSystems');
+    systems.forEach((sys, i) => {
+        fmDiv.innerHTML += `
+            <div class="system-card">
+                <div class="system-header">
+                    <span class="system-name">${sys}</span>
+                    <div class="score-input">
+                        <label>Score:</label>
+                        <input type="number" id="fm${i}" min="0" max="100">
+                        <span>%</span>
                     </div>
-                `;
-            });
+                </div>
+            </div>
+        `;
+    });
 
-            // ZYTO Core
-            const zytoCore = document.getElementById('zytoCoreSystem');
-            zytoCoreSystem.forEach((sys, i) => {
-                zytoCore.innerHTML += `
-                    <div class="system-card zyto-input">
-                        <div class="system-header">
-                            <div class="system-name">${sys}</div>
-                            <input type="number" id="zytoCore${i}" step="0.01" placeholder="dR" style="width: 100px;">
-                        </div>
+    const zytoDiv = document.getElementById('zytoCoreInputs');
+    zytoCoreSystems.forEach((sys, i) => {
+        zytoDiv.innerHTML += `
+            <div class="system-card">
+                <div class="system-header">
+                    <span class="system-name">${sys}</span>
+                    <div class="score-input">
+                        <label>dR Value:</label>
+                        <input type="number" id="zytoCore${i}" step="0.01">
                     </div>
-                `;
-            });
+                </div>
+            </div>
+        `;
+    });
 
-            // ZYTO Lifestyle
-            const zytoLife = document.getElementById('zytoLifestyle');
-            zytoLifestyle.forEach((area, i) => {
-                zytoLife.innerHTML += `
-                    <div class="system-card zyto-input">
-                        <div class="system-header">
-                            <div class="system-name">${area}</div>
-                            <input type="number" id="zytoLife${i}" step="0.01" placeholder="dR" style="width: 100px;">
-                        </div>
+    const zytoLifestyleDiv = document.getElementById('zytoLifestyleInputs');
+    zytoLifestyleAreas.forEach((area, i) => {
+        zytoLifestyleDiv.innerHTML += `
+            <div class="system-card">
+                <div class="system-header">
+                    <span class="system-name">${area}</span>
+                    <div class="score-input">
+                        <label>dR Value:</label>
+                        <input type="number" id="zytoLifestyle${i}" step="0.01">
                     </div>
-                `;
-            });
+                </div>
+            </div>
+        `;
+    });
 
-            // QRA
-            const qraP = document.getElementById('qraPoints');
-            const qraCard1 = document.createElement('div');
-            qraCard1.className = 'system-card qra-input';
-            qraCard1.innerHTML = '<div class="checkbox-group"></div>';
-            qraPoints.forEach((p, i) => {
-                qraCard1.querySelector('.checkbox-group').innerHTML += `
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="qraP${i}">
-                        <label>${p}</label>
-                    </div>
-                `;
-            });
-            qraP.appendChild(qraCard1);
+    const qraPointsDiv = document.getElementById('qraPointsList');
+    qraPoints.forEach((p, i) => {
+        qraPointsDiv.innerHTML += `
+            <div class="checkbox-item">
+                <input type="checkbox" id="qraP${i}">
+                <label for="qraP${i}">${p}</label>
+            </div>
+        `;
+    });
 
-            const qraS = document.getElementById('qraSignatures');
-            const qraCard2 = document.createElement('div');
-            qraCard2.className = 'system-card qra-input';
-            qraCard2.innerHTML = '<div class="checkbox-group"></div>';
-            qraSignatures.forEach((s, i) => {
-                qraCard2.querySelector('.checkbox-group').innerHTML += `
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="qraS${i}">
-                        <label>${s}</label>
-                    </div>
-                `;
-            });
-            qraS.appendChild(qraCard2);
+    const qraSignaturesDiv = document.getElementById('qraSignaturesList');
+    qraSignatures.forEach((s, i) => {
+        qraSignaturesDiv.innerHTML += `
+            <div class="checkbox-item">
+                <input type="checkbox" id="qraS${i}">
+                <label for="qraS${i}">${s}</label>
+            </div>
+        `;
+    });
 
-            // Physical Exam
-            const physContainer = document.getElementById('physicalFindings');
-            Object.entries(physicalExam).forEach(([category, findings]) => {
-                let html = `<div class="section-header">${category}</div>`;
-                html += '<div class="system-card physical-input"><div class="checkbox-group">';
-                findings.forEach((f, i) => {
-                    html += `
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="phys${category}${i}">
-                            <label>${f}</label>
-                        </div>
-                    `;
-                });
-                html += '</div></div>';
-                physContainer.innerHTML += html;
-            });
+    document.getElementById('assessmentDate').value = new Date().toISOString().split('T')[0];
+}
 
-            document.getElementById('assessmentDate').valueAsDate = new Date();
-        }
+function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
 
-        document.getElementById('totalBurden').addEventListener('input', function() {
-            const score = parseInt(this.value) || 0;
-            const el = document.getElementById('burdenLevel');
-            if (score > 400) el.innerHTML = '<strong style="color: #dc3545;">HIGH BURDEN</strong>';
-            else if (score >= 200) el.innerHTML = '<strong style="color: #ffc107;">MODERATE BURDEN</strong>';
-            else if (score > 0) el.innerHTML = '<strong style="color: #28a745;">LOW BURDEN</strong>';
-            else el.innerHTML = '';
-        });
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+}
 
-        function generateReport() {
-            const name = document.getElementById('patientName').value || 'Patient';
-            const burden = document.getElementById('totalBurden').value || 0;
-            
-            const scores = [];
-            systems.forEach((sys, i) => {
-                const val = parseInt(document.getElementById(`fm${i}`).value) || 0;
-                if (val > 0) scores.push({name: sys, score: val});
-            });
-            scores.sort((a, b) => b.score - a.score);
-            const top3 = scores.slice(0, 3);
+function updateBurdenMeter() {
+    const burden = parseInt(document.getElementById('totalBurden').value) || 0;
+    const indicator = document.getElementById('burdenIndicator');
+    const levelDiv = document.getElementById('burdenLevel');
+    
+    const percentage = Math.min(burden / 10, 100);
+    indicator.style.left = percentage + '%';
+    
+    let level = 'LOW';
+    let color = '#28a745';
+    if (burden > 400) {
+        level = 'HIGH';
+        color = '#dc3545';
+    } else if (burden >= 200) {
+        level = 'MODERATE';
+        color = '#ffc107';
+    }
+    
+    levelDiv.innerHTML = `<span style="color: ${color}; font-size: 1.2em;">${level} BURDEN (${burden})</span>`;
+}
 
-            let html = `<h3>Patient: ${name}</h3>`;
-            html += `<p><strong>Total Symptom Burden:</strong> ${burden}</p>`;
-            html += '<h3 style="margin-top: 20px;">Top 3 Priority Systems:</h3>';
-            top3.forEach((s, i) => {
-                html += `<p>${i+1}. ${s.name}: ${s.score}%</p>`;
-            });
-
-            document.getElementById('reportContent').innerHTML = html;
-            showTab('report');
-            document.querySelectorAll('.tab')[5].classList.add('active');
-        }
-
-        function exportData() {
-            alert('Export functionality - saves assessment as JSON file');
-        }
-
-        function clearAll() {
-            if (confirm('Clear all data?')) {
-                document.querySelectorAll('input, textarea, select').forEach(el => {
-                    if (el.type === 'checkbox') el.checked = false;
-                    else el.value = '';
-                });
-                document.getElementById('burdenLevel').innerHTML = '';
+function calculatePrioritySystems(fmTop3, zytoData, qraPoints, qraSignatures, burdenLevel) {
+    const priorities = [];
+    
+    fmTop3.forEach(fmSystem => {
+        const systemName = fmSystem.name;
+        const protocol = protocols[systemName];
+        
+        if (!protocol) return;
+        
+        let convergenceScore = 0;
+        let convergenceDetails = [];
+        
+        convergenceScore += 3;
+        convergenceDetails.push('FM Logic: Top 3 system (' + fmSystem.score + '%)');
+        
+        if (protocol.qraMapping) {
+            const qraMatches = protocol.qraMapping.filter(point => 
+                qraPoints.some(p => p.toLowerCase().includes(point.toLowerCase()))
+            );
+            if (qraMatches.length > 0) {
+                convergenceScore += 2;
+                convergenceDetails.push('QRA: Positive points (' + qraMatches.join(', ') + ')');
             }
         }
+        
+        if (zytoData.length > 0) {
+            convergenceScore += 1;
+            convergenceDetails.push('ZYTO: System stressors detected');
+        }
+        
+        if (burdenLevel === 'HIGH') convergenceScore += 2;
+        else if (burdenLevel === 'MODERATE') convergenceScore += 1;
+        
+        let priorityLevel = 'MODERATE';
+        if (convergenceScore >= 6) priorityLevel = 'HIGH';
+        else if (convergenceScore <= 3) priorityLevel = 'LOW';
+        
+        priorities.push({
+            system: systemName,
+            fmScore: fmSystem.score,
+            convergenceScore,
+            convergenceDetails,
+            priorityLevel,
+            protocol
+        });
+    });
+    
+    priorities.sort((a, b) => b.convergenceScore - a.convergenceScore);
+    return priorities;
+}
 
-        init();
+function getPriorityColor(level) {
+    if (level === 'HIGH') return '#dc3545';
+    if (level === 'MODERATE') return '#ffc107';
+    return '#28a745';
+}
+
+function generateReport() {
+    const name = document.getElementById('patientName').value || 'Patient';
+    const dob = document.getElementById('patientDOB').value || 'N/A';
+    const date = document.getElementById('assessmentDate').value || 'N/A';
+    const burden = parseInt(document.getElementById('totalBurden').value) || 0;
+    
+    const vitals = {
+        temperature: document.getElementById('temperature').value || 'N/A',
+        bpSitting: document.getElementById('bpSitting').value || 'N/A',
+        bpStanding: document.getElementById('bpStanding').value || 'N/A',
+        heartRate: document.getElementById('heartRate').value || 'N/A',
+        respRate: document.getElementById('respRate').value || 'N/A',
+        weight: document.getElementById('weight').value || 'N/A',
+        raglandPositive: document.getElementById('ragland').checked
+    };
+    
+    let burdenLevel = 'LOW';
+    if (burden > 400) burdenLevel = 'HIGH';
+    else if (burden >= 200) burdenLevel = 'MODERATE';
+    
+    const fmScores = [];
+    systems.forEach((sys, i) => {
+        const val = parseInt(document.getElementById('fm' + i).value) || 0;
+        if (val > 0) fmScores.push({name: sys, score: val, index: i});
+    });
+    fmScores.sort((a, b) => b.score - a.score);
+    
+    const top3FM = fmScores.slice(0, 3);
+    
+    const zytoCoreData = [];
+    zytoCoreSystems.forEach((sys, i) => {
+        const val = document.getElementById('zytoCore' + i).value;
+        if (val) zytoCoreData.push({name: sys, value: parseFloat(val)});
+    });
+
+    const zytoLifestyleData = [];
+    zytoLifestyleAreas.forEach((area, i) => {
+        const val = document.getElementById('zytoLifestyle' + i).value;
+        if (val) zytoLifestyleData.push({name: area, value: parseFloat(val)});
+    });
+    
+    const allZytoData = [...zytoCoreData, ...zytoLifestyleData];
+    
+    const qraPointsData = [];
+    qraPoints.forEach((p, i) => {
+        if (document.getElementById('qraP' + i).checked) {
+            qraPointsData.push(p);
+        }
+    });
+    
+    const qraSignaturesData = [];
+    qraSignatures.forEach((s, i) => {
+        if (document.getElementById('qraS' + i).checked) {
+            qraSignaturesData.push(s);
+        }
+    });
+    
+    const priorities = calculatePrioritySystems(top3FM, allZytoData, qraPointsData, qraSignaturesData, burdenLevel);
+    
+    let html = '<div style="padding: 20px;"><h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 15px; margin-bottom: 25px;">Root Health Assessment Report</h2>';
+    
+    html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;"><h3 style="color: #495057; margin-bottom: 15px;">Patient Information</h3><p><strong>Name:</strong> ' + name + '</p><p><strong>Date of Birth:</strong> ' + dob + '</p><p><strong>Assessment Date:</strong> ' + date + '</p><p><strong>Total Symptom Burden:</strong> ' + burden + ' <span class="' + burdenLevel.toLowerCase() + '-priority priority-badge">' + burdenLevel + ' BURDEN</span></p></div>';
+    
+    html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;"><h3 style="color: #495057; margin-bottom: 15px;">Vital Signs</h3><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
+    html += '<p><strong>Temperature:</strong> ' + vitals.temperature + '°F</p>';
+    html += '<p><strong>BP Sitting:</strong> ' + vitals.bpSitting + '</p>';
+    html += '<p><strong>BP Standing:</strong> ' + vitals.bpStanding + '</p>';
+    html += '<p><strong>Heart Rate:</strong> ' + vitals.heartRate + ' bpm</p>';
+    html += '<p><strong>Respiratory Rate:</strong> ' + vitals.respRate + ' /min</p>';
+    html += '<p><strong>Weight:</strong> ' + vitals.weight + ' lbs</p>';
+    html += '</div>';
+    if (vitals.raglandPositive) {
+        html += '<p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;"><strong>⚠️ Ragland\'s Test: POSITIVE</strong> - Systolic BP failed to rise 10+ mmHg or dropped when standing, suggesting adrenal dysfunction</p>';
+    }
+    html += '</div>';
+    
+    html += '<div class="recommendation-section"><h3>🎯 Priority Systems for Intervention</h3><p style="color: #6c757d; margin-bottom: 20px;">Based on convergence of findings across FM Logic, ZYTO, QRA, and Physical Exam, the following systems require attention:</p>';
+    
+    priorities.forEach((p, index) => {
+        html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 5px solid ' + getPriorityColor(p.priorityLevel) + ';"><h4 style="color: #495057; margin-bottom: 10px;">' + (index + 1) + '. ' + p.system + ' <span class="' + p.priorityLevel.toLowerCase() + '-priority priority-badge">' + p.priorityLevel + ' PRIORITY</span></h4><p><strong>FM Logic Score:</strong> ' + p.fmScore + '%</p><p><strong>Convergence Score:</strong> ' + p.convergenceScore + '/10</p>';
+        
+        html += '<div style="margin: 15px 0;"><strong>Assessment Convergence:</strong><ul style="margin: 10px 0 10px 20px;">';
+        p.convergenceDetails.forEach(d => {
+            html += '<li>' + d + '</li>';
+        });
+        html += '</ul></div>';
+        
+        html += '<div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0;"><h5 style="color: #667eea; margin-bottom: 10px;">📋 Recommended Laboratory Testing</h5>';
+        
+        html += '<div style="margin-bottom: 10px;"><strong style="color: #dc3545;">Primary Tests (Start Here):</strong><ul style="margin: 5px 0 5px 20px;">';
+        p.protocol.labs.primary.forEach(lab => {
+            html += '<li>' + lab + '</li>';
+        });
+        html += '</ul></div>';
+        
+        html += '<div style="margin-bottom: 10px;"><strong style="color: #ffc107;">Secondary Tests (If Primary Abnormal):</strong><ul style="margin: 5px 0 5px 20px;">';
+        p.protocol.labs.secondary.forEach(lab => {
+            html += '<li>' + lab + '</li>';
+        });
+        html += '</ul></div>';
+        
+        html += '<div><strong style="color: #28a745;">Advanced Tests (Complex Cases):</strong><ul style="margin: 5px 0 5px 20px;">';
+        p.protocol.labs.advanced.forEach(lab => {
+            html += '<li>' + lab + '</li>';
+        });
+        html += '</ul></div></div>';
+        
+        html += '<div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0;"><h5 style="color: #667eea; margin-bottom: 10px;">💊 Nutritional Support Protocol</h5><ul style="margin: 10px 0 10px 20px;">';
+        p.protocol.supplements.forEach(supp => {
+            html += '<li>' + supp + '</li>';
+        });
+        html += '</ul></div></div>';
+    });
+    
+    html += '</div>';
+    
+    if (fmScores.length > 0) {
+        html += '<div class="recommendation-section" style="margin-top: 30px;"><h3>📊 Complete FM Logic Assessment</h3><table style="width: 100%; border-collapse: collapse; margin-top: 15px;"><thead><tr style="background: #667eea; color: white;"><th style="padding: 10px; text-align: left;">Rank</th><th style="padding: 10px; text-align: left;">System</th><th style="padding: 10px; text-align: right;">Score</th></tr></thead><tbody>';
+        
+        fmScores.forEach((sys, i) => {
+            html += '<tr style="background: ' + (i % 2 === 0 ? '#f8f9fa' : 'white') + '; border-bottom: 1px solid #dee2e6;"><td style="padding: 10px;">' + (i + 1) + '</td><td style="padding: 10px;">' + sys.name + '</td><td style="padding: 10px; text-align: right; font-weight: 600;">' + sys.score + '%</td></tr>';
+        });
+        
+        html += '</tbody></table></div>';
+    }
+    
+    html += '<div class="recommendation-section" style="margin-top: 30px;"><h3>📅 Follow-up Protocol</h3><div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;"><h4 style="color: #495057;">Initial Phase (0-12 weeks):</h4><ul style="margin: 10px 0 10px 20px;"><li>Weekly QRA monitoring</li><li>Monthly Zyto scans for members</li><li>Symptom tracking</li><li>Basic lab recheck at 8-12 weeks</li></ul></div><div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;"><h4 style="color: #495057;">Maintenance Phase (3-6 months):</h4><ul style="margin: 10px 0 10px 20px;"><li>Quarterly comprehensive reassessment</li><li>Annual advanced testing</li><li>Ongoing nutritional optimization</li><li>Lifestyle factor monitoring</li></ul></div></div>';
+    
+    html += '<div style="margin-top: 30px; padding: 20px; background: #e9ecef; border-radius: 10px; text-align: center;"><p style="font-size: 0.9em; color: #6c757d;"><strong>Note:</strong> This report is generated based on the Root Health Initial Assessment Algorithm. All recommendations should be reviewed and approved by your healthcare provider before implementation.</p></div></div>';
+    
+    document.getElementById('reportContent').innerHTML = html;
+    showTab('report');
+    document.querySelectorAll('.tab')[5].classList.add('active');
+}
+
+async function exportPDF() {
+    const reportContent = document.getElementById('reportContent');
+    
+    if (!reportContent.innerHTML || reportContent.innerHTML.includes('Complete all assessment tabs')) {
+        alert('Please generate a report first before exporting to PDF.');
+        return;
+    }
+
+    const patientName = document.getElementById('patientName').value || 'Patient';
+    const date = document.getElementById('assessmentDate').value || new Date().toISOString().split('T')[0];
+    const filename = `Root_Health_Assessment_${patientName.replace(/\s+/g, '_')}_${date}.pdf`;
+
+    // Show loading message
+    const originalButton = event.target;
+    const originalText = originalButton.textContent;
+    originalButton.textContent = 'Generating PDF...';
+    originalButton.disabled = true;
+
+    try {
+        const { jsPDF } = window.jspdf;
+        
+        // Create a temporary container for better rendering
+        const tempContainer = document.createElement('div');
+        tempContainer.style.width = '210mm'; // A4 width
+        tempContainer.style.padding = '10mm';
+        tempContainer.style.backgroundColor = '#ffffff';
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.left = '-9999px';
+        tempContainer.innerHTML = reportContent.innerHTML;
+        document.body.appendChild(tempContainer);
+        
+        const canvas = await html2canvas(tempContainer, {
+            scale: 1.5,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            width: tempContainer.scrollWidth,
+            height: tempContainer.scrollHeight
+        });
+        
+        // Remove temporary container
+        document.body.removeChild(tempContainer);
+        
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const imgWidth = pdfWidth - (2 * margin);
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        let heightLeft = imgHeight;
+        let position = margin;
+        
+        // Add first page
+        pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+        heightLeft -= (pdfHeight - 2 * margin);
+        
+        // Add additional pages if needed
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight + margin;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+            heightLeft -= (pdfHeight - 2 * margin);
+        }
+        
+        pdf.save(filename);
+        
+        alert('PDF exported successfully!');
+    } catch (error) {
+        console.error('PDF export error:', error);
+        alert('Error generating PDF: ' + error.message + '\n\nTip: Try using your browser\'s print function instead (Ctrl+P or Cmd+P) and select "Save as PDF".');
+    } finally {
+        originalButton.textContent = originalText;
+        originalButton.disabled = false;
+    }
+}
+
+function clearAll() {
+    if (confirm('Clear all data? This cannot be undone.')) {
+        document.querySelectorAll('input, textarea, select').forEach(el => {
+            if (el.type === 'checkbox') el.checked = false;
+            else el.value = '';
+        });
+        document.getElementById('burdenLevel').innerHTML = '';
+        document.getElementById('reportContent').innerHTML = '<p style="text-align: center; padding: 40px; color: #6c757d;">Complete all assessment tabs, then click "Generate Report" below to get personalized lab and supplement recommendations.</p>';
+    }
+}
+
+// Better print handling
+window.addEventListener('beforeprint', function() {
+    // Ensure report tab content is visible for printing
+    document.getElementById('report').style.display = 'block';
+});
+
+window.addEventListener('afterprint', function() {
+    // Restore normal view after printing
+    showTab('report');
+});
+
+init();
     </script>
 </body>
 </html>

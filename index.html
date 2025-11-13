@@ -616,11 +616,11 @@
                 <h2>ZYTO Scan Results</h2>
                 
                 <div class="section-header">4 Core Body Systems for Wellness</div>
-                <p style="margin-bottom: 15px; color: #6c757d;">The 4 core systems critical to maintaining health. Enter dR (Delta Response) values - how much each system deviates from your individual range value.</p>
+                <p style="margin-bottom: 15px; color: #6c757d;">The 4 core systems critical to maintaining health. Enter dR (Delta Response) values - how much each system deviates from your individual range value. Higher absolute values indicate greater system stress.</p>
                 <div id="zytoCoreInputs"></div>
 
                 <div class="section-header" style="margin-top: 30px;">Lifestyle Areas</div>
-                <p style="margin-bottom: 15px; color: #6c757d;">Enter dR values for lifestyle stressor areas.</p>
+                <p style="margin-bottom: 15px; color: #6c757d;">Enter dR values for lifestyle stressor areas. These findings will directly influence supplement and lab recommendations.</p>
                 <div id="zytoLifestyleInputs"></div>
             </div>
 
@@ -741,7 +741,8 @@ const protocols = {
                 'Parasite Testing'
             ]
         },
-        qraMapping: ['Small Intestines', 'Large Intestines', 'Stomach', 'Gallbladder']
+        qraMapping: ['Small Intestines', 'Large Intestines', 'Stomach', 'Gallbladder'],
+        zytoMapping: ['Gastrointestinal System', 'Diet & Nutrition', 'Inflammation']
     },
     'Inflammation': {
         supplements: [
@@ -772,7 +773,8 @@ const protocols = {
                 'Cytokine Response Profile'
             ]
         },
-        qraMapping: ['Lymphatics', 'Inflammatory markers', 'Cytokines']
+        qraMapping: ['Lymphatics', 'Inflammatory markers', 'Cytokines'],
+        zytoMapping: ['Inflammation', 'Immune System', 'Gastrointestinal System']
     },
     'Digestive Enzyme Insufficiency': {
         supplements: [
@@ -797,7 +799,8 @@ const protocols = {
                 'SIBO breath test'
             ]
         },
-        qraMapping: ['Pancreas', 'Stomach', 'Gallbladder']
+        qraMapping: ['Pancreas', 'Stomach', 'Gallbladder'],
+        zytoMapping: ['Gastrointestinal System', 'Diet & Nutrition']
     },
     'Infection': {
         supplements: [
@@ -830,7 +833,8 @@ const protocols = {
                 'Vibrant Wellness: Mycotoxins Test'
             ]
         },
-        qraMapping: ['Virus', 'Bacteria', 'Parasite', 'Mycotoxin (Mold)', 'Lyme']
+        qraMapping: ['Virus', 'Bacteria', 'Parasite', 'Mycotoxin (Mold)', 'Lyme'],
+        zytoMapping: ['Immune System', 'Toxic Stress', 'Inflammation']
     },
     'Dietary Factors': {
         supplements: [
@@ -857,7 +861,8 @@ const protocols = {
                 'Organic Acids Test'
             ]
         },
-        qraMapping: []
+        qraMapping: [],
+        zytoMapping: ['Diet & Nutrition', 'Hydration', 'Gastrointestinal System']
     },
     'Reproductive Hormone Dysfunction': {
         supplements: [
@@ -883,7 +888,8 @@ const protocols = {
                 'ZRT Laboratory: Hormone Testing'
             ]
         },
-        qraMapping: ['Ovaries/Testes', 'Uterus/Prostate']
+        qraMapping: ['Ovaries/Testes', 'Uterus/Prostate'],
+        zytoMapping: ['Hormonal/Endocrine System', 'Mental/Emotional Stress', 'Sleep']
     },
     'Food Allergy': {
         supplements: [
@@ -913,7 +919,8 @@ const protocols = {
                 'Vibrant Wellness: Dairy Zoomer'
             ]
         },
-        qraMapping: ['Food', 'Small Intestines', 'Large Intestines']
+        qraMapping: ['Food', 'Small Intestines', 'Large Intestines'],
+        zytoMapping: ['Gastrointestinal System', 'Diet & Nutrition', 'Inflammation', 'Immune System']
     },
     'Adrenal Dysfunction': {
         supplements: [
@@ -941,7 +948,8 @@ const protocols = {
                 'LabCorp: ACTH Stimulation Test'
             ]
         },
-        qraMapping: ['Adrenal']
+        qraMapping: ['Adrenal'],
+        zytoMapping: ['Hormonal/Endocrine System', 'Mental/Emotional Stress', 'Sleep']
     },
     'Thyroid Dysfunction': {
         supplements: [
@@ -971,7 +979,8 @@ const protocols = {
                 'Thyroid ultrasound'
             ]
         },
-        qraMapping: ['Thyroid', 'Hypothalamus']
+        qraMapping: ['Thyroid', 'Hypothalamus'],
+        zytoMapping: ['Hormonal/Endocrine System', 'Mental/Emotional Stress']
     },
     'Blood Sugar Dysregulation': {
         supplements: [
@@ -998,7 +1007,8 @@ const protocols = {
                 'LabCorp: Advanced Lipid Panel'
             ]
         },
-        qraMapping: ['Pancreas']
+        qraMapping: ['Pancreas'],
+        zytoMapping: ['Hormonal/Endocrine System', 'Diet & Nutrition', 'Inflammation']
     },
     'Nutritional Deficiencies': {
         supplements: [
@@ -1024,7 +1034,8 @@ const protocols = {
                 'Amino acid analysis'
             ]
         },
-        qraMapping: []
+        qraMapping: [],
+        zytoMapping: ['Diet & Nutrition', 'Hydration', 'Gastrointestinal System']
     },
     'Immune System Dysfunction': {
         supplements: [
@@ -1050,7 +1061,8 @@ const protocols = {
                 'GX Sciences Immune panel'
             ]
         },
-        qraMapping: ['Spleen', 'Lymphatics', 'Thymus']
+        qraMapping: ['Spleen', 'Lymphatics', 'Thymus'],
+        zytoMapping: ['Immune System', 'Inflammation', 'Toxic Stress']
     },
     'Kidney Dysfunction': {
         supplements: [
@@ -1077,7 +1089,8 @@ const protocols = {
                 'Kidney ultrasound'
             ]
         },
-        qraMapping: ['Kidney', 'Bladder']
+        qraMapping: ['Kidney', 'Bladder'],
+        zytoMapping: ['Detoxification System', 'Hydration', 'Toxic Stress']
     },
     'Environmental Toxin Exposure': {
         supplements: [
@@ -1111,7 +1124,8 @@ const protocols = {
                 'Organic Acids Test'
             ]
         },
-        qraMapping: ['Liver', 'Kidney', 'Heavy Metals', 'Environmental toxins']
+        qraMapping: ['Liver', 'Kidney', 'Heavy Metals', 'Environmental toxins'],
+        zytoMapping: ['Detoxification System', 'Toxic Stress', 'Inflammation', 'Gastrointestinal System']
     },
     'Liver/Gallbladder Dysfunction': {
         supplements: [
@@ -1141,7 +1155,8 @@ const protocols = {
                 'MTHFR testing'
             ]
         },
-        qraMapping: ['Liver', 'Gallbladder']
+        qraMapping: ['Liver', 'Gallbladder'],
+        zytoMapping: ['Detoxification System', 'Gastrointestinal System', 'Toxic Stress']
     },
     'Cardiovascular Disease': {
         supplements: [
@@ -1173,7 +1188,8 @@ const protocols = {
                 'CT Coronary Calcium Score'
             ]
         },
-        qraMapping: ['Heart', 'Circulation']
+        qraMapping: ['Heart', 'Circulation'],
+        zytoMapping: ['Inflammation', 'Mental/Emotional Stress', 'Diet & Nutrition']
     },
     'Mycotoxins': {
         supplements: [
@@ -1206,7 +1222,8 @@ const protocols = {
                 'HLA-DR genetic testing'
             ]
         },
-        qraMapping: ['Mycotoxin (Mold)', 'Fungus', 'Liver', 'Kidney']
+        qraMapping: ['Mycotoxin (Mold)', 'Fungus', 'Liver', 'Kidney'],
+        zytoMapping: ['Toxic Stress', 'Detoxification System', 'Immune System', 'Inflammation']
     },
     'Psychological Disorder': {
         supplements: [
@@ -1234,7 +1251,8 @@ const protocols = {
                 'DUTCH neurotransmitter metabolites'
             ]
         },
-        qraMapping: ['Brain', 'Hypothalamus', 'Brain 2', 'Brain 3']
+        qraMapping: ['Brain', 'Hypothalamus', 'Brain 2', 'Brain 3'],
+        zytoMapping: ['Mental/Emotional Stress', 'Sleep', 'Hormonal/Endocrine System']
     },
     'Anemia': {
         supplements: [
@@ -1261,7 +1279,8 @@ const protocols = {
                 'Vitamin A'
             ]
         },
-        qraMapping: ['Spleen']
+        qraMapping: ['Spleen'],
+        zytoMapping: ['Diet & Nutrition', 'Gastrointestinal System']
     }
 };
 
@@ -1368,53 +1387,127 @@ function updateBurdenMeter() {
     levelDiv.innerHTML = `<span style="color: ${color}; font-size: 1.2em;">${level} BURDEN (${burden})</span>`;
 }
 
-function calculatePrioritySystems(fmTop3, zytoData, qraPoints, qraSignatures, burdenLevel) {
+function calculatePrioritySystems(allFmScores, zytoData, qraPoints, qraSignatures, burdenLevel, physicalFindings) {
     const priorities = [];
     
-    fmTop3.forEach(fmSystem => {
-        const systemName = fmSystem.name;
+    // Get all ZYTO system names from the data
+    const zytoSystemNames = zytoData.map(z => z.name);
+    
+    // Create a map of FM scores for easy lookup
+    const fmScoreMap = {};
+    allFmScores.forEach(fm => {
+        fmScoreMap[fm.name] = fm.score;
+    });
+    
+    // Physical exam mappings to body systems
+    const physicalExamMappings = {
+        'Adrenal Dysfunction': ['ragland', 'tempDysregulation'],
+        'Thyroid Dysfunction': ['thyroidEnlarged', 'hairLoss', 'tempDysregulation', 'bradycardia', 'tachycardia'],
+        'Liver/Gallbladder Dysfunction': ['jaundice', 'hepatomegaly', 'ruqPain'],
+        'Small/Large Intestine Dysfunction': ['abdominalTenderness', 'bloating'],
+        'Inflammation': ['jointPain', 'jointSwelling', 'darkCircles', 'skinIssues'],
+        'Immune System Dysfunction': ['lymphNodes'],
+        'Cardiovascular Disease': ['edema', 'poorCirculation', 'varicoseVeins', 'tachycardia', 'bradycardia'],
+        'Psychological Disorder': ['brainFog', 'anxiety', 'depression'],
+        'Nutritional Deficiencies': ['nailRidges', 'nailWhiteSpots', 'meesLines', 'beausLines', 'keratosis'],
+        'Blood Sugar Dysregulation': ['acanthosis', 'skinTags'],
+        'Environmental Toxin Exposure': ['meesLines'],
+        'Anemia': ['hairLoss'],
+        'Kidney Dysfunction': ['edema']
+    };
+    
+    // Evaluate ALL systems in the protocols object
+    Object.keys(protocols).forEach(systemName => {
         const protocol = protocols[systemName];
-        
-        if (!protocol) return;
         
         let convergenceScore = 0;
         let convergenceDetails = [];
         
-        convergenceScore += 3;
-        convergenceDetails.push('FM Logic: Top 3 system (' + fmSystem.score + '%)');
-        
-        if (protocol.qraMapping) {
-            const qraMatches = protocol.qraMapping.filter(point => 
-                qraPoints.some(p => p.toLowerCase().includes(point.toLowerCase()))
-            );
-            if (qraMatches.length > 0) {
+        // FM Logic contribution (weighted by score)
+        const fmScore = fmScoreMap[systemName] || 0;
+        if (fmScore > 0) {
+            if (fmScore >= 50) {
+                convergenceScore += 4;
+                convergenceDetails.push('FM Logic: HIGH score (' + fmScore + '%)');
+            } else if (fmScore >= 30) {
+                convergenceScore += 3;
+                convergenceDetails.push('FM Logic: MODERATE score (' + fmScore + '%)');
+            } else if (fmScore >= 15) {
                 convergenceScore += 2;
-                convergenceDetails.push('QRA: Positive points (' + qraMatches.join(', ') + ')');
+                convergenceDetails.push('FM Logic: MILD score (' + fmScore + '%)');
+            } else {
+                convergenceScore += 1;
+                convergenceDetails.push('FM Logic: LOW score (' + fmScore + '%)');
             }
         }
         
-        if (zytoData.length > 0) {
-            convergenceScore += 1;
-            convergenceDetails.push('ZYTO: System stressors detected');
+        // ZYTO contribution
+        if (protocol.zytoMapping && protocol.zytoMapping.length > 0) {
+            const zytoMatches = protocol.zytoMapping.filter(zytoSystem => 
+                zytoSystemNames.some(z => z.toLowerCase().includes(zytoSystem.toLowerCase()) || 
+                                          zytoSystem.toLowerCase().includes(z.toLowerCase()))
+            );
+            if (zytoMatches.length > 0) {
+                convergenceScore += 2 * zytoMatches.length;
+                convergenceDetails.push('ZYTO: System stressors (' + zytoMatches.join(', ') + ')');
+            }
         }
         
-        if (burdenLevel === 'HIGH') convergenceScore += 2;
-        else if (burdenLevel === 'MODERATE') convergenceScore += 1;
+        // QRA contribution
+        if (protocol.qraMapping && protocol.qraMapping.length > 0) {
+            const qraPointMatches = protocol.qraMapping.filter(point => 
+                qraPoints.some(p => p.toLowerCase().includes(point.toLowerCase()))
+            );
+            const qraSignatureMatches = protocol.qraMapping.filter(point => 
+                qraSignatures.some(s => s.toLowerCase().includes(point.toLowerCase()))
+            );
+            
+            const allQraMatches = [...new Set([...qraPointMatches, ...qraSignatureMatches])];
+            
+            if (allQraMatches.length > 0) {
+                convergenceScore += 2 * allQraMatches.length;
+                convergenceDetails.push('QRA: Positive findings (' + allQraMatches.join(', ') + ')');
+            }
+        }
         
-        let priorityLevel = 'MODERATE';
-        if (convergenceScore >= 6) priorityLevel = 'HIGH';
-        else if (convergenceScore <= 3) priorityLevel = 'LOW';
+        // Physical Exam contribution
+        if (physicalExamMappings[systemName]) {
+            const physicalMatches = physicalExamMappings[systemName].filter(finding => 
+                physicalFindings[finding] === true
+            );
+            if (physicalMatches.length > 0) {
+                convergenceScore += 2 * physicalMatches.length;
+                const matchNames = physicalMatches.map(f => {
+                    // Convert camelCase to readable format
+                    return f.replace(/([A-Z])/g, ' $1').trim().toLowerCase();
+                });
+                convergenceDetails.push('Physical Exam: Positive findings (' + matchNames.join(', ') + ')');
+            }
+        }
         
-        priorities.push({
-            system: systemName,
-            fmScore: fmSystem.score,
-            convergenceScore,
-            convergenceDetails,
-            priorityLevel,
-            protocol
-        });
+        // Burden level contribution (applies to all systems)
+        if (burdenLevel === 'HIGH') convergenceScore += 1;
+        else if (burdenLevel === 'MODERATE') convergenceScore += 0.5;
+        
+        // Only include systems with convergence score >= 2 (meaningful evidence from at least one source)
+        if (convergenceScore >= 2) {
+            // Determine priority level based on convergence score
+            let priorityLevel = 'LOW';
+            if (convergenceScore >= 8) priorityLevel = 'HIGH';
+            else if (convergenceScore >= 5) priorityLevel = 'MODERATE';
+            
+            priorities.push({
+                system: systemName,
+                fmScore: fmScore,
+                convergenceScore,
+                convergenceDetails,
+                priorityLevel,
+                protocol
+            });
+        }
     });
     
+    // Sort by convergence score (highest first)
     priorities.sort((a, b) => b.convergenceScore - a.convergenceScore);
     return priorities;
 }
@@ -1441,18 +1534,52 @@ function generateReport() {
         raglandPositive: document.getElementById('ragland').checked
     };
     
+    // Collect ALL physical exam findings
+    const physicalFindings = {
+        ragland: document.getElementById('ragland').checked,
+        tempDysregulation: document.getElementById('tempDysregulation').checked,
+        bradycardia: document.getElementById('bradycardia').checked,
+        tachycardia: document.getElementById('tachycardia').checked,
+        hairLoss: document.getElementById('hairLoss').checked,
+        thyroidEnlarged: document.getElementById('thyroidEnlarged').checked,
+        lymphNodes: document.getElementById('lymphNodes').checked,
+        darkCircles: document.getElementById('darkCircles').checked,
+        abdominalTenderness: document.getElementById('abdominalTenderness').checked,
+        bloating: document.getElementById('bloating').checked,
+        ruqPain: document.getElementById('ruqPain').checked,
+        hepatomegaly: document.getElementById('hepatomegaly').checked,
+        jaundice: document.getElementById('jaundice').checked,
+        jointPain: document.getElementById('jointPain').checked,
+        jointSwelling: document.getElementById('jointSwelling').checked,
+        muscleTenderness: document.getElementById('muscleTenderness').checked,
+        edema: document.getElementById('edema').checked,
+        poorCirculation: document.getElementById('poorCirculation').checked,
+        varicoseVeins: document.getElementById('varicoseVeins').checked,
+        skinIssues: document.getElementById('skinIssues').checked,
+        acanthosis: document.getElementById('acanthosis').checked,
+        skinTags: document.getElementById('skinTags').checked,
+        keratosis: document.getElementById('keratosis').checked,
+        nailRidges: document.getElementById('nailRidges').checked,
+        nailWhiteSpots: document.getElementById('nailWhiteSpots').checked,
+        meesLines: document.getElementById('meesLines').checked,
+        beausLines: document.getElementById('beausLines').checked,
+        brainFog: document.getElementById('brainFog').checked,
+        anxiety: document.getElementById('anxiety').checked,
+        depression: document.getElementById('depression').checked,
+        tremors: document.getElementById('tremors').checked
+    };
+    
     let burdenLevel = 'LOW';
     if (burden > 400) burdenLevel = 'HIGH';
     else if (burden >= 200) burdenLevel = 'MODERATE';
     
+    // Collect ALL FM Logic scores (not just top 3)
     const fmScores = [];
     systems.forEach((sys, i) => {
         const val = parseInt(document.getElementById('fm' + i).value) || 0;
         if (val > 0) fmScores.push({name: sys, score: val, index: i});
     });
     fmScores.sort((a, b) => b.score - a.score);
-    
-    const top3FM = fmScores.slice(0, 3);
     
     const zytoCoreData = [];
     zytoCoreSystems.forEach((sys, i) => {
@@ -1482,7 +1609,8 @@ function generateReport() {
         }
     });
     
-    const priorities = calculatePrioritySystems(top3FM, allZytoData, qraPointsData, qraSignaturesData, burdenLevel);
+    // Pass ALL FM scores, not just top 3, plus physical findings
+    const priorities = calculatePrioritySystems(fmScores, allZytoData, qraPointsData, qraSignaturesData, burdenLevel, physicalFindings);
     
     let html = '<div style="padding: 20px;"><h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 15px; margin-bottom: 25px;">Root Health Assessment Report</h2>';
     
@@ -1501,10 +1629,61 @@ function generateReport() {
     }
     html += '</div>';
     
-    html += '<div class="recommendation-section"><h3>🎯 Priority Systems for Intervention</h3><p style="color: #6c757d; margin-bottom: 20px;">Based on convergence of findings across FM Logic, ZYTO, QRA, and Physical Exam, the following systems require attention:</p>';
+    // Add Physical Exam Summary if findings present
+    const positiveFindings = Object.keys(physicalFindings).filter(key => physicalFindings[key] === true);
+    if (positiveFindings.length > 0) {
+        html += '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107;"><h3 style="color: #856404; margin-bottom: 15px;">⚕️ Physical Exam Positive Findings</h3>';
+        html += '<p style="margin-bottom: 10px;"><strong>Clinical findings that inform recommendations below:</strong></p>';
+        html += '<ul style="margin: 10px 0 10px 20px; columns: 2; -webkit-columns: 2; -moz-columns: 2;">';
+        positiveFindings.forEach(finding => {
+            const readableName = finding.replace(/([A-Z])/g, ' $1').trim();
+            html += '<li>' + readableName.charAt(0).toUpperCase() + readableName.slice(1) + '</li>';
+        });
+        html += '</ul></div>';
+    }
+    
+    // Add ZYTO Summary Section
+    if (allZytoData.length > 0) {
+        html += '<div style="background: #e7f3ff; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #2196F3;"><h3 style="color: #1976D2; margin-bottom: 15px;">🎯 ZYTO Scan Summary</h3>';
+        html += '<p style="margin-bottom: 10px;"><strong>Systems Under Stress (these findings inform supplement & lab recommendations below):</strong></p>';
+        html += '<ul style="margin: 10px 0 10px 20px;">';
+        allZytoData.forEach(z => {
+            html += '<li><strong>' + z.name + ':</strong> dR = ' + z.value.toFixed(2) + '</li>';
+        });
+        html += '</ul></div>';
+    }
+    
+    // Add QRA Summary if findings present
+    if (qraPointsData.length > 0 || qraSignaturesData.length > 0) {
+        html += '<div style="background: #e8f5e9; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #4CAF50;"><h3 style="color: #2E7D32; margin-bottom: 15px;">🔬 QRA Positive Findings</h3>';
+        if (qraPointsData.length > 0) {
+            html += '<p style="margin-bottom: 5px;"><strong>Organ/System Points:</strong></p>';
+            html += '<ul style="margin: 5px 0 15px 20px; columns: 3; -webkit-columns: 3; -moz-columns: 3;">';
+            qraPointsData.forEach(point => {
+                html += '<li>' + point + '</li>';
+            });
+            html += '</ul>';
+        }
+        if (qraSignaturesData.length > 0) {
+            html += '<p style="margin-bottom: 5px;"><strong>Stressor Signatures:</strong></p>';
+            html += '<ul style="margin: 5px 0 10px 20px; columns: 2; -webkit-columns: 2; -moz-columns: 2;">';
+            qraSignaturesData.forEach(sig => {
+                html += '<li>' + sig + '</li>';
+            });
+            html += '</ul>';
+        }
+        html += '</div>';
+    }
+    
+    html += '<div class="recommendation-section"><h3>🎯 Priority Systems for Intervention</h3><p style="color: #6c757d; margin-bottom: 20px;">Based on convergence of findings across <strong>ALL assessment modalities</strong> (FM Logic, ZYTO, QRA, and Physical Exam), the following systems require attention. Systems are recommended even if FM Logic score is low when other modalities show strong evidence:</p>';
     
     priorities.forEach((p, index) => {
-        html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 5px solid ' + getPriorityColor(p.priorityLevel) + ';"><h4 style="color: #495057; margin-bottom: 10px;">' + (index + 1) + '. ' + p.system + ' <span class="' + p.priorityLevel.toLowerCase() + '-priority priority-badge">' + p.priorityLevel + ' PRIORITY</span></h4><p><strong>FM Logic Score:</strong> ' + p.fmScore + '%</p><p><strong>Convergence Score:</strong> ' + p.convergenceScore + '/10</p>';
+        html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 5px solid ' + getPriorityColor(p.priorityLevel) + ';"><h4 style="color: #495057; margin-bottom: 10px;">' + (index + 1) + '. ' + p.system + ' <span class="' + p.priorityLevel.toLowerCase() + '-priority priority-badge">' + p.priorityLevel + ' PRIORITY</span></h4>';
+        
+        if (p.fmScore > 0) {
+            html += '<p><strong>FM Logic Score:</strong> ' + p.fmScore + '%</p>';
+        }
+        html += '<p><strong>Convergence Score:</strong> ' + p.convergenceScore.toFixed(1) + '/20+</p>';
         
         html += '<div style="margin: 15px 0;"><strong>Assessment Convergence:</strong><ul style="margin: 10px 0 10px 20px;">';
         p.convergenceDetails.forEach(d => {
@@ -1551,9 +1730,9 @@ function generateReport() {
         html += '</tbody></table></div>';
     }
     
-    html += '<div class="recommendation-section" style="margin-top: 30px;"><h3>📅 Follow-up Protocol</h3><div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;"><h4 style="color: #495057;">Initial Phase (0-12 weeks):</h4><ul style="margin: 10px 0 10px 20px;"><li>Weekly QRA monitoring</li><li>Monthly Zyto scans for members</li><li>Symptom tracking</li><li>Basic lab recheck at 8-12 weeks</li></ul></div><div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;"><h4 style="color: #495057;">Maintenance Phase (3-6 months):</h4><ul style="margin: 10px 0 10px 20px;"><li>Quarterly comprehensive reassessment</li><li>Annual advanced testing</li><li>Ongoing nutritional optimization</li><li>Lifestyle factor monitoring</li></ul></div></div>';
+    html += '<div class="recommendation-section" style="margin-top: 30px;"><h3>📅 Follow-up Protocol</h3><div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;"><h4 style="color: #495057;">Initial Phase (0-12 weeks):</h4><ul style="margin: 10px 0 10px 20px;"><li>Weekly QRA monitoring</li><li>Monthly ZYTO scans for members</li><li>Symptom tracking with FM Logic reassessment</li><li>Basic lab recheck at 8-12 weeks</li></ul></div><div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;"><h4 style="color: #495057;">Maintenance Phase (3-6 months):</h4><ul style="margin: 10px 0 10px 20px;"><li>Quarterly comprehensive reassessment (all modalities)</li><li>Annual advanced testing</li><li>Ongoing nutritional optimization</li><li>Lifestyle factor monitoring</li></ul></div></div>';
     
-    html += '<div style="margin-top: 30px; padding: 20px; background: #e9ecef; border-radius: 10px; text-align: center;"><p style="font-size: 0.9em; color: #6c757d;"><strong>Note:</strong> This report is generated based on the Root Health Initial Assessment Algorithm. All recommendations should be reviewed and approved by your healthcare provider before implementation. Dosages are general guidelines and may need adjustment based on individual patient needs, sensitivities, and provider discretion.</p></div></div>';
+    html += '<div style="margin-top: 30px; padding: 20px; background: #e9ecef; border-radius: 10px; text-align: center;"><p style="font-size: 0.9em; color: #6c757d;"><strong>Clinical Integration Note:</strong> This report integrates findings from ALL assessment modalities - FM Logic questionnaire, ZYTO bioenergetic scanning, QRA muscle testing, and Physical Examination. Supplement and laboratory recommendations are based on convergent evidence across multiple modalities, not FM Logic scores alone. This multi-modal approach ensures comprehensive clinical assessment and reduces the risk of missing critical pathology. All recommendations should be reviewed and approved by your healthcare provider before implementation.</p></div></div>';
     
     document.getElementById('reportContent').innerHTML = html;
     showTab('report');

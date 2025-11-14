@@ -348,6 +348,10 @@
                 page-break-inside: avoid;
                 page-break-after: auto;
             }
+            img {
+                max-width: 100%;
+                height: auto;
+            }
         }
     </style>
 </head>
@@ -1612,7 +1616,11 @@ function generateReport() {
     // Pass ALL FM scores, not just top 3, plus physical findings
     const priorities = calculatePrioritySystems(fmScores, allZytoData, qraPointsData, qraSignaturesData, burdenLevel, physicalFindings);
     
-    let html = '<div style="padding: 20px;"><h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 15px; margin-bottom: 25px;">Root Health Assessment Report</h2>';
+    let html = '<div style="padding: 20px;">';
+    html += '<div style="text-align: center; margin-bottom: 30px;">';
+    html += '<img src="https://i.imgur.com/TG7gibD.png" alt="Root Health Logo" style="width: 150px; height: auto; margin-bottom: 15px;">';
+    html += '<h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 15px; display: inline-block; margin: 0 auto;">Root Health Assessment Report</h2>';
+    html += '</div>';
     
     html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;"><h3 style="color: #495057; margin-bottom: 15px;">Patient Information</h3><p><strong>Name:</strong> ' + name + '</p><p><strong>Date of Birth:</strong> ' + dob + '</p><p><strong>Assessment Date:</strong> ' + date + '</p><p><strong>Total Symptom Burden:</strong> ' + burden + ' <span class="' + burdenLevel.toLowerCase() + '-priority priority-badge">' + burdenLevel + ' BURDEN</span></p></div>';
     

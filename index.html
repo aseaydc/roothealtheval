@@ -310,47 +310,123 @@
         }
 
         @media print {
+            @page {
+                size: auto;
+                margin: 0.5in 0.5in 0.5in 0.5in;
+            }
+            
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
             body {
-                background: white;
-                padding: 0;
-                margin: 0;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
+            
             .container {
-                box-shadow: none;
-                max-width: 100%;
+                box-shadow: none !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
             }
-            .tabs, .button-group, .header {
+            
+            .tabs, .button-group {
                 display: none !important;
             }
-            .content {
-                max-height: none;
-                overflow: visible;
-                padding: 20px;
+            
+            .header {
+                display: none !important;
             }
+            
+            .content {
+                max-height: none !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            
             .tab-content {
                 display: block !important;
             }
+            
+            #reportContent {
+                padding: 0 !important;
+            }
+            
+            #reportContent > div {
+                padding: 10px !important;
+                margin: 0 !important;
+            }
+            
             .system-card, .patient-info {
                 page-break-inside: avoid;
                 break-inside: avoid;
+                margin-bottom: 10px !important;
             }
+            
             .recommendation-section {
                 page-break-before: auto;
                 page-break-after: auto;
             }
-            h2, h3, h4 {
+            
+            h2 {
                 page-break-after: avoid;
+                margin-top: 10px !important;
             }
+            
+            h3, h4, h5 {
+                page-break-after: avoid;
+                margin-top: 8px !important;
+                margin-bottom: 8px !important;
+            }
+            
             table {
                 page-break-inside: auto;
+                width: 100% !important;
+                font-size: 10pt !important;
             }
+            
             tr {
                 page-break-inside: avoid;
                 page-break-after: auto;
             }
+            
             img {
                 max-width: 100%;
                 height: auto;
+                page-break-inside: avoid;
+            }
+            
+            ul, ol {
+                page-break-inside: avoid;
+            }
+            
+            li {
+                font-size: 10pt !important;
+            }
+            
+            p {
+                font-size: 10pt !important;
+            }
+            
+            /* Ensure content boxes don't overflow */
+            div[style*="padding: 20px"] {
+                padding: 10px !important;
+            }
+            
+            div[style*="border-radius"] {
+                page-break-inside: avoid;
+            }
+            
+            /* Make priority system boxes more compact for printing */
+            .recommendation-section > div {
+                margin: 8px 0 !important;
+                padding: 10px !important;
             }
         }
     </style>
@@ -1616,15 +1692,15 @@ function generateReport() {
     // Pass ALL FM scores, not just top 3, plus physical findings
     const priorities = calculatePrioritySystems(fmScores, allZytoData, qraPointsData, qraSignaturesData, burdenLevel, physicalFindings);
     
-    let html = '<div style="padding: 20px;">';
-    html += '<div style="text-align: center; margin-bottom: 30px;">';
-    html += '<img src="https://i.imgur.com/TG7gibD.png" alt="Root Health Logo" style="width: 150px; height: auto; margin-bottom: 15px;">';
-    html += '<h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 15px; display: inline-block; margin: 0 auto;">Root Health Assessment Report</h2>';
+    let html = '<div style="padding: 10px;">';
+    html += '<div style="text-align: center; margin: 0 auto 30px auto; display: flex; flex-direction: column; align-items: center;">';
+    html += '<img src="https://i.imgur.com/TG7gibD.png" alt="Root Health Logo" style="width: 250px; height: auto; margin: 0 auto 20px auto; display: block;">';
+    html += '<h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 15px; margin: 0;">Root Health Assessment Report</h2>';
     html += '</div>';
     
-    html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;"><h3 style="color: #495057; margin-bottom: 15px;">Patient Information</h3><p><strong>Name:</strong> ' + name + '</p><p><strong>Date of Birth:</strong> ' + dob + '</p><p><strong>Assessment Date:</strong> ' + date + '</p><p><strong>Total Symptom Burden:</strong> ' + burden + ' <span class="' + burdenLevel.toLowerCase() + '-priority priority-badge">' + burdenLevel + ' BURDEN</span></p></div>';
+    html += '<div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 15px 0;"><h3 style="color: #495057; margin-bottom: 15px;">Patient Information</h3><p><strong>Name:</strong> ' + name + '</p><p><strong>Date of Birth:</strong> ' + dob + '</p><p><strong>Assessment Date:</strong> ' + date + '</p><p><strong>Total Symptom Burden:</strong> ' + burden + ' <span class="' + burdenLevel.toLowerCase() + '-priority priority-badge">' + burdenLevel + ' BURDEN</span></p></div>';
     
-    html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;"><h3 style="color: #495057; margin-bottom: 15px;">Vital Signs</h3><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
+    html += '<div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 15px 0;"><h3 style="color: #495057; margin-bottom: 15px;">Vital Signs</h3><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
     html += '<p><strong>Temperature:</strong> ' + vitals.temperature + '°F</p>';
     html += '<p><strong>BP Sitting:</strong> ' + vitals.bpSitting + '</p>';
     html += '<p><strong>BP Standing:</strong> ' + vitals.bpStanding + '</p>';
@@ -1633,14 +1709,14 @@ function generateReport() {
     html += '<p><strong>Weight:</strong> ' + vitals.weight + ' lbs</p>';
     html += '</div>';
     if (vitals.raglandPositive) {
-        html += '<p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;"><strong>⚠️ Ragland\'s Test: POSITIVE</strong> - Systolic BP failed to rise 10+ mmHg or dropped when standing, suggesting adrenal dysfunction</p>';
+        html += '<p style="margin-top: 12px; padding: 8px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;"><strong>⚠️ Ragland\'s Test: POSITIVE</strong> - Systolic BP failed to rise 10+ mmHg or dropped when standing, suggesting adrenal dysfunction</p>';
     }
     html += '</div>';
     
     // Add Physical Exam Summary if findings present
     const positiveFindings = Object.keys(physicalFindings).filter(key => physicalFindings[key] === true);
     if (positiveFindings.length > 0) {
-        html += '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107;"><h3 style="color: #856404; margin-bottom: 15px;">⚕️ Physical Exam Positive Findings</h3>';
+        html += '<div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #ffc107;"><h3 style="color: #856404; margin-bottom: 15px;">⚕️ Physical Exam Positive Findings</h3>';
         html += '<p style="margin-bottom: 10px;"><strong>Clinical findings that inform recommendations below:</strong></p>';
         html += '<ul style="margin: 10px 0 10px 20px; columns: 2; -webkit-columns: 2; -moz-columns: 2;">';
         positiveFindings.forEach(finding => {
@@ -1652,7 +1728,7 @@ function generateReport() {
     
     // Add ZYTO Summary Section
     if (allZytoData.length > 0) {
-        html += '<div style="background: #e7f3ff; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #2196F3;"><h3 style="color: #1976D2; margin-bottom: 15px;">🎯 ZYTO Scan Summary</h3>';
+        html += '<div style="background: #e7f3ff; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #2196F3;"><h3 style="color: #1976D2; margin-bottom: 15px;">🎯 ZYTO Scan Summary</h3>';
         html += '<p style="margin-bottom: 10px;"><strong>Systems Under Stress (these findings inform supplement & lab recommendations below):</strong></p>';
         html += '<ul style="margin: 10px 0 10px 20px;">';
         allZytoData.forEach(z => {
@@ -1663,7 +1739,7 @@ function generateReport() {
     
     // Add QRA Summary if findings present
     if (qraPointsData.length > 0 || qraSignaturesData.length > 0) {
-        html += '<div style="background: #e8f5e9; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #4CAF50;"><h3 style="color: #2E7D32; margin-bottom: 15px;">🔬 QRA Positive Findings</h3>';
+        html += '<div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #4CAF50;"><h3 style="color: #2E7D32; margin-bottom: 15px;">🔬 QRA Positive Findings</h3>';
         if (qraPointsData.length > 0) {
             html += '<p style="margin-bottom: 5px;"><strong>Organ/System Points:</strong></p>';
             html += '<ul style="margin: 5px 0 15px 20px; columns: 3; -webkit-columns: 3; -moz-columns: 3;">';
@@ -1683,31 +1759,31 @@ function generateReport() {
         html += '</div>';
     }
     
-    html += '<div class="recommendation-section"><h3>🎯 Priority Systems for Intervention</h3><p style="color: #6c757d; margin-bottom: 20px;">Based on convergence of findings across <strong>ALL assessment modalities</strong> (FM Logic, ZYTO, QRA, and Physical Exam), the following systems require attention. Systems are recommended even if FM Logic score is low when other modalities show strong evidence:</p>';
+    html += '<div class="recommendation-section" style="margin-top: 15px;"><h3>🎯 Priority Systems for Intervention</h3><p style="color: #6c757d; margin-bottom: 15px;">Based on convergence of findings across <strong>ALL assessment modalities</strong> (FM Logic, ZYTO, QRA, and Physical Exam), the following systems require attention. Systems are recommended even if FM Logic score is low when other modalities show strong evidence:</p>';
     
     priorities.forEach((p, index) => {
-        html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 5px solid ' + getPriorityColor(p.priorityLevel) + ';"><h4 style="color: #495057; margin-bottom: 10px;">' + (index + 1) + '. ' + p.system + ' <span class="' + p.priorityLevel.toLowerCase() + '-priority priority-badge">' + p.priorityLevel + ' PRIORITY</span></h4>';
+        html += '<div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 12px 0; border-left: 5px solid ' + getPriorityColor(p.priorityLevel) + ';"><h4 style="color: #495057; margin-bottom: 10px;">' + (index + 1) + '. ' + p.system + ' <span class="' + p.priorityLevel.toLowerCase() + '-priority priority-badge">' + p.priorityLevel + ' PRIORITY</span></h4>';
         
         if (p.fmScore > 0) {
             html += '<p><strong>FM Logic Score:</strong> ' + p.fmScore + '%</p>';
         }
         html += '<p><strong>Convergence Score:</strong> ' + p.convergenceScore.toFixed(1) + '/20+</p>';
         
-        html += '<div style="margin: 15px 0;"><strong>Assessment Convergence:</strong><ul style="margin: 10px 0 10px 20px;">';
+        html += '<div style="margin: 12px 0;"><strong>Assessment Convergence:</strong><ul style="margin: 8px 0 8px 20px;">';
         p.convergenceDetails.forEach(d => {
             html += '<li>' + d + '</li>';
         });
         html += '</ul></div>';
         
-        html += '<div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0;"><h5 style="color: #667eea; margin-bottom: 10px;">📋 Recommended Laboratory Testing</h5>';
+        html += '<div style="background: white; padding: 12px; border-radius: 8px; margin: 12px 0;"><h5 style="color: #667eea; margin-bottom: 10px;">📋 Recommended Laboratory Testing</h5>';
         
-        html += '<div style="margin-bottom: 10px;"><strong style="color: #dc3545;">Primary Tests (Start Here):</strong><ul style="margin: 5px 0 5px 20px;">';
+        html += '<div style="margin-bottom: 8px;"><strong style="color: #dc3545;">Primary Tests (Start Here):</strong><ul style="margin: 5px 0 5px 20px;">';
         p.protocol.labs.primary.forEach(lab => {
             html += '<li>' + lab + '</li>';
         });
         html += '</ul></div>';
         
-        html += '<div style="margin-bottom: 10px;"><strong style="color: #ffc107;">Secondary Tests (If Primary Abnormal):</strong><ul style="margin: 5px 0 5px 20px;">';
+        html += '<div style="margin-bottom: 8px;"><strong style="color: #ffc107;">Secondary Tests (If Primary Abnormal):</strong><ul style="margin: 5px 0 5px 20px;">';
         p.protocol.labs.secondary.forEach(lab => {
             html += '<li>' + lab + '</li>';
         });
@@ -1719,28 +1795,28 @@ function generateReport() {
         });
         html += '</ul></div></div>';
         
-        html += '<div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0;"><h5 style="color: #667eea; margin-bottom: 10px;">💊 Nutritional Support Protocol with Dosages</h5><ul style="margin: 10px 0 10px 20px;">';
+        html += '<div style="background: white; padding: 12px; border-radius: 8px; margin: 12px 0;"><h5 style="color: #667eea; margin-bottom: 10px;">💊 Nutritional Support Protocol with Dosages</h5><ul style="margin: 8px 0 8px 20px;">';
         p.protocol.supplements.forEach(supp => {
             html += '<li>' + supp + '</li>';
         });
-        html += '</ul><p style="margin-top: 15px; padding: 10px; background: #e7f3ff; border-left: 3px solid #2196F3; font-size: 0.9em;"><strong>Note:</strong> Dosages listed are general guidelines. Always follow your healthcare provider\'s specific recommendations. Start low and go slow with sensitive patients. For homeopathic remedies showing "drops" - use standard homeopathic dosing guidelines.</p></div></div>';
+        html += '</ul><p style="margin-top: 12px; padding: 8px; background: #e7f3ff; border-left: 3px solid #2196F3; font-size: 0.9em;"><strong>Note:</strong> Dosages listed are general guidelines. Always follow your healthcare provider\'s specific recommendations. Start low and go slow with sensitive patients. For homeopathic remedies showing "drops" - use standard homeopathic dosing guidelines.</p></div></div>';
     });
     
     html += '</div>';
     
     if (fmScores.length > 0) {
-        html += '<div class="recommendation-section" style="margin-top: 30px;"><h3>📊 Complete FM Logic Assessment</h3><table style="width: 100%; border-collapse: collapse; margin-top: 15px;"><thead><tr style="background: #667eea; color: white;"><th style="padding: 10px; text-align: left;">Rank</th><th style="padding: 10px; text-align: left;">System</th><th style="padding: 10px; text-align: right;">Score</th></tr></thead><tbody>';
+        html += '<div class="recommendation-section" style="margin-top: 20px;"><h3>📊 Complete FM Logic Assessment</h3><table style="width: 100%; border-collapse: collapse; margin-top: 12px;"><thead><tr style="background: #667eea; color: white;"><th style="padding: 8px; text-align: left;">Rank</th><th style="padding: 8px; text-align: left;">System</th><th style="padding: 8px; text-align: right;">Score</th></tr></thead><tbody>';
         
         fmScores.forEach((sys, i) => {
-            html += '<tr style="background: ' + (i % 2 === 0 ? '#f8f9fa' : 'white') + '; border-bottom: 1px solid #dee2e6;"><td style="padding: 10px;">' + (i + 1) + '</td><td style="padding: 10px;">' + sys.name + '</td><td style="padding: 10px; text-align: right; font-weight: 600;">' + sys.score + '%</td></tr>';
+            html += '<tr style="background: ' + (i % 2 === 0 ? '#f8f9fa' : 'white') + '; border-bottom: 1px solid #dee2e6;"><td style="padding: 8px;">' + (i + 1) + '</td><td style="padding: 8px;">' + sys.name + '</td><td style="padding: 8px; text-align: right; font-weight: 600;">' + sys.score + '%</td></tr>';
         });
         
         html += '</tbody></table></div>';
     }
     
-    html += '<div class="recommendation-section" style="margin-top: 30px;"><h3>📅 Follow-up Protocol</h3><div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;"><h4 style="color: #495057;">Initial Phase (0-12 weeks):</h4><ul style="margin: 10px 0 10px 20px;"><li>Weekly QRA monitoring</li><li>Monthly ZYTO scans for members</li><li>Symptom tracking with FM Logic reassessment</li><li>Basic lab recheck at 8-12 weeks</li></ul></div><div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;"><h4 style="color: #495057;">Maintenance Phase (3-6 months):</h4><ul style="margin: 10px 0 10px 20px;"><li>Quarterly comprehensive reassessment (all modalities)</li><li>Annual advanced testing</li><li>Ongoing nutritional optimization</li><li>Lifestyle factor monitoring</li></ul></div></div>';
+    html += '<div class="recommendation-section" style="margin-top: 20px;"><h3>📅 Follow-up Protocol</h3><div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin: 8px 0;"><h4 style="color: #495057;">Initial Phase (0-12 weeks):</h4><ul style="margin: 8px 0 8px 20px;"><li>Weekly QRA monitoring</li><li>Monthly ZYTO scans for members</li><li>Symptom tracking with FM Logic reassessment</li><li>Basic lab recheck at 8-12 weeks</li></ul></div><div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin: 8px 0;"><h4 style="color: #495057;">Maintenance Phase (3-6 months):</h4><ul style="margin: 8px 0 8px 20px;"><li>Quarterly comprehensive reassessment (all modalities)</li><li>Annual advanced testing</li><li>Ongoing nutritional optimization</li><li>Lifestyle factor monitoring</li></ul></div></div>';
     
-    html += '<div style="margin-top: 30px; padding: 20px; background: #e9ecef; border-radius: 10px; text-align: center;"><p style="font-size: 0.9em; color: #6c757d;"><strong>Clinical Integration Note:</strong> This report integrates findings from ALL assessment modalities - FM Logic questionnaire, ZYTO bioenergetic scanning, QRA muscle testing, and Physical Examination. Supplement and laboratory recommendations are based on convergent evidence across multiple modalities, not FM Logic scores alone. This multi-modal approach ensures comprehensive clinical assessment and reduces the risk of missing critical pathology. All recommendations should be reviewed and approved by your healthcare provider before implementation.</p></div></div>';
+    html += '<div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 10px; text-align: center;"><p style="font-size: 0.9em; color: #6c757d;"><strong>Clinical Integration Note:</strong> This report integrates findings from ALL assessment modalities - FM Logic questionnaire, ZYTO bioenergetic scanning, QRA muscle testing, and Physical Examination. Supplement and laboratory recommendations are based on convergent evidence across multiple modalities, not FM Logic scores alone. This multi-modal approach ensures comprehensive clinical assessment and reduces the risk of missing critical pathology. All recommendations should be reviewed and approved by your healthcare provider before implementation.</p></div></div>';
     
     document.getElementById('reportContent').innerHTML = html;
     showTab('report');
@@ -1768,21 +1844,39 @@ async function exportPDF() {
         const { jsPDF } = window.jspdf;
         
         const tempContainer = document.createElement('div');
-        tempContainer.style.width = '190mm';
-        tempContainer.style.padding = '15mm';
+        tempContainer.style.width = '210mm'; // A4 width
+        tempContainer.style.padding = '10mm';
         tempContainer.style.backgroundColor = '#ffffff';
         tempContainer.style.position = 'absolute';
         tempContainer.style.left = '-9999px';
+        tempContainer.style.fontFamily = 'Arial, sans-serif';
         tempContainer.innerHTML = reportContent.innerHTML;
         document.body.appendChild(tempContainer);
         
+        // Wait for images to load
+        const images = tempContainer.getElementsByTagName('img');
+        const imagePromises = Array.from(images).map(img => {
+            return new Promise((resolve) => {
+                if (img.complete) {
+                    resolve();
+                } else {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                }
+            });
+        });
+        await Promise.all(imagePromises);
+        
         const canvas = await html2canvas(tempContainer, {
-            scale: 1.5,
+            scale: 2,
             useCORS: true,
+            allowTaint: true,
             logging: false,
             backgroundColor: '#ffffff',
             width: tempContainer.scrollWidth,
-            height: tempContainer.scrollHeight
+            height: tempContainer.scrollHeight,
+            windowWidth: tempContainer.scrollWidth,
+            windowHeight: tempContainer.scrollHeight
         });
         
         document.body.removeChild(tempContainer);
@@ -1791,16 +1885,19 @@ async function exportPDF() {
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        const margin = 15;
-        const imgWidth = pdfWidth - (2 * margin);
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const margin = 10;
+        const contentWidth = pdfWidth - (2 * margin);
+        const imgWidth = contentWidth;
+        const imgHeight = (canvas.height * contentWidth) / canvas.width;
         
         let heightLeft = imgHeight;
         let position = margin;
         
+        // First page
         pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
         heightLeft -= (pdfHeight - 2 * margin);
         
+        // Additional pages if needed
         while (heightLeft > 0) {
             position = heightLeft - imgHeight + margin;
             pdf.addPage();
